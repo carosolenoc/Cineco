@@ -1,0 +1,1294 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Resultados · Encuesta de compra de entradas</title>
+<style>
+  :root {
+    color-scheme: light;
+    --plane: #f9f9f7;
+    --surface: #fcfcfb;
+    --card: #ffffff;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11,11,11,0.10);
+    --track: #f0efec;
+    --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a; --s4: #eda100;
+    --good-ink: #006300;
+    --warn-bg: #fff4d6; --warn-ink: #6a4a00;
+    --btn: #17151f; --btn-ink: #ffffff;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --r: 14px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --plane: #0d0d0d; --surface: #1a1a19; --card: #1a1a19;
+      --ink: #f0efec; --ink-2: #c3c2b7; --muted: #898781;
+      --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10); --track: #262624;
+      --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
+      --good-ink: #0ca30c;
+      --warn-bg: #3a2f12; --warn-ink: #f4d58a;
+      --btn: #f0efec; --btn-ink: #0b0b0b;
+    }
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body { font-family: var(--sans); background: var(--plane); color: var(--ink); font-size: 15px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+  button, input, select { font: inherit; color: inherit; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 0 24px 80px; }
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+  header.top { padding: 28px 0 18px; display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-end; justify-content: space-between; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin: 0 0 4px; }
+  h1 { font-size: 28px; line-height: 1.15; margin: 0; letter-spacing: -.015em; font-weight: 700; }
+  h2 { font-size: 20px; margin: 0 0 4px; letter-spacing: -.01em; }
+  h3 { font-size: 16px; margin: 0; line-height: 1.3; }
+  .status { color: var(--ink-2); font-size: 14px; margin-top: 6px; }
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
+  .btn { appearance: none; border: 1px solid var(--border); background: var(--card); color: var(--ink); border-radius: 999px; padding: 8px 14px; font-weight: 600; font-size: 14px; cursor: pointer; display: inline-flex; gap: 8px; align-items: center; }
+  .btn:hover { border-color: var(--axis); }
+  .btn.primary { background: var(--btn); color: var(--btn-ink); border-color: var(--btn); }
+  .btn:focus-visible, select:focus-visible, input:focus-visible, .bar-row:focus-visible, summary:focus-visible { outline: 2px solid var(--s1); outline-offset: 2px; }
+  .btn.small { padding: 4px 10px; font-size: 13px; }
+  .btn[hidden] { display: none; }
+
+  .banner { background: var(--warn-bg); color: var(--warn-ink); border-radius: var(--r); padding: 10px 16px; font-size: 14px; margin: 0 0 16px; }
+  .banner[hidden] { display: none; }
+
+  /* Fuente de datos */
+  .source { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 20px; margin-bottom: 20px; }
+  .source[hidden] { display: none; }
+  .source-grid { display: grid; gap: 16px; grid-template-columns: 1fr; margin-top: 14px; }
+  @media (min-width: 860px) { .source-grid { grid-template-columns: 1.4fr 1fr 1fr; } }
+  .source-opt { border: 1px solid var(--border); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px; background: var(--surface); }
+  .source-opt p { margin: 0; color: var(--ink-2); font-size: 14px; }
+  .source-opt input[type=url] { width: 100%; border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 9px 12px; font-size: 14px; }
+  .source-err { color: #b42318; font-size: 14px; margin: 10px 0 0; }
+  .source-err:empty { display: none; }
+
+  /* Filtros */
+  .filters { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--plane) 92%, transparent); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); padding: 12px 0; margin-bottom: 8px; border-bottom: 1px solid var(--grid); }
+  .filters-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .f { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+  .f label { font-size: 12px; color: var(--muted); font-weight: 600; }
+  .f select { border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 7px 30px 7px 10px; font-size: 14px; max-width: 220px; appearance: none; -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23898781' stroke-width='1.6'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 10px center; }
+  .f.compare select { border-color: var(--axis); font-weight: 600; }
+  .check { display: inline-flex; gap: 8px; align-items: center; font-size: 14px; color: var(--ink-2); padding-bottom: 7px; cursor: pointer; }
+  .sep { width: 1px; align-self: stretch; background: var(--grid); margin: 0 4px; }
+  .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--ink-2); margin-top: 10px; }
+  .legend:empty { display: none; }
+  .key { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; flex: none; }
+
+  /* KPIs */
+  .kpis { display: grid; gap: 12px; grid-template-columns: repeat(2, 1fr); margin: 16px 0 28px; }
+  @media (min-width: 860px) { .kpis { grid-template-columns: 1.4fr repeat(4, 1fr); } }
+  .tile { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 16px 18px; }
+  .tile .label { font-size: 13px; color: var(--ink-2); }
+  .tile .value { font-size: 28px; font-weight: 650; letter-spacing: -.01em; margin-top: 2px; }
+  .tile.hero { grid-column: 1 / -1; }
+  @media (min-width: 860px) { .tile.hero { grid-column: auto; } }
+  .tile.hero .value { font-size: 48px; line-height: 1.05; }
+  .tile .sub { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+
+  section.block { margin: 0 0 36px; }
+  .block-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 10px; margin-bottom: 14px; }
+  .block-head p { margin: 0; color: var(--ink-2); font-size: 14px; max-width: 70ch; }
+
+  /* Hallazgos */
+  .insights { display: grid; gap: 12px; grid-template-columns: 1fr; }
+  @media (min-width: 720px) { .insights { grid-template-columns: 1fr 1fr; } }
+  @media (min-width: 1080px) { .insights { grid-template-columns: 1fr 1fr 1fr; } }
+  .insight { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 18px; display: flex; flex-direction: column; gap: 8px; }
+  .insight .tag { font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
+  .insight .stat { font-size: 34px; font-weight: 650; letter-spacing: -.02em; line-height: 1; }
+  .insight .text { margin: 0; font-size: 15px; }
+  .insight .decision { margin: 4px 0 0; padding-top: 10px; border-top: 1px solid var(--grid); font-size: 13.5px; color: var(--ink-2); }
+  .insight .decision b { color: var(--ink); }
+
+  /* Diferencias */
+  .diffs { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); }
+  .diff { display: grid; grid-template-columns: 1fr; gap: 8px 24px; padding: 14px 18px; border-top: 1px solid var(--grid); }
+  .diff:first-child { border-top: 0; }
+  @media (min-width: 860px) { .diff { grid-template-columns: 1.3fr 1fr; align-items: center; } }
+  .diff .what { font-size: 15px; }
+  .diff .meta { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+  .mini { display: grid; gap: 4px; }
+  .mini-row { display: grid; grid-template-columns: 130px 1fr 44px; gap: 8px; align-items: center; font-size: 13px; color: var(--ink-2); }
+  .mini-row .bar-track { height: 10px; }
+  .mini-row .v { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink); font-weight: 600; }
+  .empty { padding: 18px; color: var(--ink-2); font-size: 14px; }
+
+  /* Preguntas */
+  .qgrid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 960px) { .qgrid { grid-template-columns: 1fr 1fr; } }
+  .qcard { background: var(--card); border: 1px solid var(--border); border-radius: var(--r); padding: 18px 18px 14px; display: flex; flex-direction: column; min-width: 0; }
+  .qcard .decide { font-size: 13px; color: var(--ink-2); margin: 6px 0 2px; }
+  .qcard .decide b { color: var(--ink); font-weight: 600; }
+  .qcard .base { font-size: 12.5px; color: var(--muted); margin: 0 0 14px; }
+  .qcard .legend { margin: 0 0 12px; }
+  .qcard footer { margin-top: auto; padding-top: 10px; display: flex; justify-content: flex-end; }
+
+  .bars { display: grid; gap: 6px; }
+  .bar-row { display: grid; grid-template-columns: minmax(0, 42%) 1fr 48px; gap: 10px; align-items: center; padding: 3px 4px; margin: 0 -4px; border-radius: 6px; cursor: default; }
+  .bar-row:hover { background: color-mix(in srgb, var(--ink) 4%, transparent); }
+  .bar-label { font-size: 13.5px; line-height: 1.25; color: var(--ink); overflow-wrap: anywhere; }
+  .bar-label .tagc { font-size: 11.5px; color: var(--good-ink); font-weight: 600; white-space: nowrap; }
+  .bar-track { position: relative; border-left: 1px solid var(--axis); display: grid; gap: 2px; padding: 2px 0; }
+  .bar { height: 14px; border-radius: 0 4px 4px 0; background: var(--s1); min-width: 1px; transition: width .35s cubic-bezier(.2,.7,.2,1); }
+  .bar.g { height: 8px; }
+  .bar-val { text-align: right; font-size: 13.5px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .bar-val small { display: block; font-weight: 400; font-size: 11.5px; color: var(--muted); }
+  @media (max-width: 560px) {
+    .bar-row { grid-template-columns: 1fr 44px; grid-template-areas: "l v" "t t"; row-gap: 4px; }
+    .bar-label { grid-area: l; } .bar-val { grid-area: v; } .bar-track { grid-area: t; }
+  }
+  @media (prefers-reduced-motion: reduce) { .bar { transition: none; } }
+
+  table.tv { width: 100%; border-collapse: collapse; font-size: 13px; margin-top: 10px; }
+  table.tv th, table.tv td { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--grid); font-variant-numeric: tabular-nums; }
+  table.tv th:first-child, table.tv td:first-child { text-align: left; }
+  table.tv th { color: var(--muted); font-weight: 600; font-size: 12px; }
+
+  /* Abiertas */
+  .open-grid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+  @media (min-width: 960px) { .open-grid { grid-template-columns: 1fr 1.4fr; } }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+  .chip { border: 1px solid var(--border); background: var(--surface); border-radius: 999px; padding: 4px 10px; font-size: 13px; cursor: pointer; }
+  .chip[aria-pressed=true] { background: var(--btn); color: var(--btn-ink); border-color: var(--btn); }
+  .chip .n { color: var(--muted); margin-left: 4px; font-variant-numeric: tabular-nums; }
+  .chip[aria-pressed=true] .n { color: inherit; opacity: .7; }
+  .quotes { display: grid; gap: 8px; max-height: 560px; overflow: auto; padding-right: 4px; }
+  .quote { border: 1px solid var(--border); border-radius: 12px; padding: 10px 14px; background: var(--surface); }
+  .quote p { margin: 0; font-size: 14.5px; }
+  .quote .qm { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .quote mark { background: color-mix(in srgb, var(--s4) 35%, transparent); color: inherit; border-radius: 3px; padding: 0 2px; }
+  .search { width: 100%; border: 1px solid var(--border); background: var(--card); border-radius: 10px; padding: 8px 12px; font-size: 14px; margin-bottom: 10px; }
+
+  .tooltip { position: fixed; z-index: 100; pointer-events: none; background: var(--card); color: var(--ink); border: 1px solid var(--border); box-shadow: 0 8px 24px rgba(0,0,0,.14); border-radius: 10px; padding: 8px 10px; font-size: 13px; max-width: 280px; opacity: 0; transition: opacity .1s; }
+  .tooltip.on { opacity: 1; }
+  .tooltip .tt-title { color: var(--ink-2); font-size: 12px; margin-bottom: 4px; }
+  .tooltip .tt-row { display: flex; align-items: center; gap: 8px; }
+  .tooltip .tt-row b { font-variant-numeric: tabular-nums; }
+  .tooltip .lk { width: 12px; height: 2px; border-radius: 1px; flex: none; }
+  .tooltip .tt-row span { color: var(--ink-2); }
+
+  .foot { color: var(--muted); font-size: 12.5px; margin-top: 40px; }
+  .hidden { display: none !important; }
+  .dim { opacity: .55; transition: opacity .15s; }
+  @media (max-width: 720px) {
+    .wrap { padding: 0 16px 60px; }
+    h1 { font-size: 24px; }
+    .filters { position: static; backdrop-filter: none; -webkit-backdrop-filter: none; }
+    .filters-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .f select { max-width: none; width: 100%; }
+    .f.compare { grid-column: 1 / -1; }
+    .sep { display: none; }
+    .check, .filters-row > .btn { grid-column: 1 / -1; justify-self: start; }
+    .mini-row { grid-template-columns: 110px 1fr 40px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <p class="eyebrow">Investigación UX · Compra de entradas</p>
+      <h1>Resultados de la encuesta</h1>
+      <div class="status" id="status">Sin datos cargados.</div>
+    </div>
+    <div class="actions">
+      <button class="btn" id="btnReload" type="button" hidden>Actualizar</button>
+      <button class="btn" id="btnSource" type="button">Fuente de datos</button>
+      <button class="btn" id="btnCopy" type="button" hidden>Copiar resumen</button>
+      <button class="btn" id="btnCsv" type="button" hidden>Descargar CSV filtrado</button>
+    </div>
+  </header>
+
+  <div class="banner" id="sampleBanner" hidden><b>Datos de ejemplo ficticios.</b> Sirven para ver cómo funciona el tablero; ninguna cifra es real. Conecta tu Google Sheet para ver respuestas reales.</div>
+  <div class="banner" id="smallBanner" hidden></div>
+
+  <section class="source" id="source" aria-labelledby="sourceTitle">
+    <h2 id="sourceTitle">Conecta las respuestas</h2>
+    <p style="margin:0;color:var(--ink-2);font-size:14px">Elige cómo traer los datos. Nada sale de tu navegador: el tablero solo lee el CSV.</p>
+    <div class="source-grid">
+      <div class="source-opt">
+        <h3>Enlace CSV publicado (se actualiza solo)</h3>
+        <p>En Google Sheets: Archivo → Compartir → Publicar en la web → hoja «Respuestas» → formato CSV. Pega el enlace:</p>
+        <input type="url" id="csvUrl" placeholder="https://docs.google.com/spreadsheets/d/e/…/pub?gid=0&single=true&output=csv" aria-label="Enlace CSV publicado">
+        <div><button class="btn primary" id="btnUrl" type="button">Cargar enlace</button></div>
+      </div>
+      <div class="source-opt">
+        <h3>Subir un archivo CSV</h3>
+        <p>En Google Sheets: Archivo → Descargar → CSV (hoja «Respuestas»).</p>
+        <div><label class="btn" for="csvFile">Elegir archivo…</label><input type="file" id="csvFile" accept=".csv,text/csv" class="sr-only"></div>
+      </div>
+      <div class="source-opt">
+        <h3>Ver con datos de ejemplo</h3>
+        <p>186 respuestas ficticias para explorar el tablero antes de lanzar la encuesta.</p>
+        <div><button class="btn" id="btnSample" type="button">Usar datos de ejemplo</button></div>
+      </div>
+    </div>
+    <p class="source-err" id="sourceErr" role="alert"></p>
+  </section>
+
+  <div id="dash" class="hidden">
+    <div class="filters" id="filters" role="region" aria-label="Filtros">
+      <div class="filters-row" id="filtersRow"></div>
+      <div class="legend" id="globalLegend" aria-label="Leyenda de grupos"></div>
+    </div>
+
+    <div class="kpis" id="kpis"></div>
+
+    <section class="block" aria-labelledby="hTitle">
+      <div class="block-head">
+        <div>
+          <h2 id="hTitle">Hallazgos clave</h2>
+          <p>Lectura automática de las respuestas filtradas, con la decisión de diseño que cada dato ayuda a tomar.</p>
+        </div>
+      </div>
+      <div class="insights" id="insights"></div>
+    </section>
+
+    <section class="block" aria-labelledby="dTitle">
+      <div class="block-head">
+        <div>
+          <h2 id="dTitle">Diferencias entre segmentos que quizá no esperabas</h2>
+          <p>El tablero compara cada respuesta entre grupos (canal, frecuencia, Tarjeta Cineco, dispositivo, otras cadenas) y muestra solo diferencias de 15 puntos o más que difícilmente son azar (p &lt; 0,01). Úsalas como hipótesis para validar en entrevistas.</p>
+        </div>
+      </div>
+      <div class="diffs" id="diffs"></div>
+    </section>
+
+    <div id="sections"></div>
+
+    <section class="block" aria-labelledby="oTitle">
+      <div class="block-head">
+        <div>
+          <h2 id="oTitle">Respuestas abiertas</h2>
+          <p>Lo que cambiarían, por qué prefieren cierta opción de comida y las respuestas «Otra». Temas detectados por palabras clave y todas las respuestas para leerlas en contexto. Toca un tema o una palabra para filtrar.</p>
+        </div>
+      </div>
+      <div class="open-grid">
+        <div class="qcard" id="themesCard"></div>
+        <div class="qcard" id="quotesCard"></div>
+      </div>
+    </section>
+
+    <p class="foot" id="foot"></p>
+  </div>
+</div>
+<div class="tooltip" id="tooltip" role="status" aria-live="polite"></div>
+
+<script>
+/* ==========================================================================
+   CONFIGURACIÓN — pega aquí el enlace CSV publicado de la hoja «Respuestas»
+   para que el tablero cargue los datos automáticamente al abrirse.
+   ========================================================================== */
+const CONFIG = {
+  DATA_URL: "",
+  SPEEDER_SECONDS: 60,   // respuestas más rápidas que esto se consideran poco confiables
+  MIN_GROUP_N: 12,       // tamaño mínimo de un grupo para comparar segmentos
+};
+</script>
+<script>
+/* ==========================================================================
+   Esquema de la encuesta — fuente única para la encuesta y el dashboard.
+   Si cambias una pregunta aquí, vuelve a generar ambos archivos (build.py).
+   ========================================================================== */
+const SURVEY = {
+  version: "1.0",
+  minutes: 4,
+  sections: {
+    perfil: "Tú y el cine",
+    descubrir: "Encontrar qué ver",
+    funcion: "Elegir la función",
+    pago: "Pagar",
+    experiencia: "Tu experiencia",
+  },
+
+  /* Cada pantalla tiene uno o más campos. Tipos: single | multi | select | text | email */
+  screens: [
+    {
+      id: "s1", section: "perfil",
+      fields: [{
+        key: "p1_frecuencia", type: "single", required: true,
+        title: "¿Con qué frecuencia vas a cine?",
+        options: ["Varias veces al mes", "Una vez al mes", "Cada 2 o 3 meses", "Un par de veces al año", "Casi nunca"],
+      }],
+    },
+    {
+      id: "s2", section: "perfil",
+      fields: [
+        {
+          key: "p2_cadenas", type: "multi", required: true,
+          title: "¿A qué cines sueles ir?",
+          help: "Elige todos los que apliquen.",
+          options: ["Cine Colombia", "Cinemark", "Cinépolis", "Procinal", "Royal Films", "Otro"],
+        },
+        {
+          key: "p2_ciudad", type: "select", required: true,
+          title: "¿En qué ciudad vas a cine normalmente?",
+          placeholder: "Elige tu ciudad",
+          options: ["Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Bucaramanga", "Pereira", "Manizales", "Cúcuta", "Ibagué", "Santa Marta", "Villavicencio", "Otra ciudad"],
+        },
+      ],
+    },
+    {
+      id: "s3", section: "perfil",
+      fields: [
+        {
+          key: "p3_canal", type: "single", required: true,
+          title: "¿Dónde compras tus entradas la mayoría de las veces?",
+          options: [
+            { v: "Web", label: "En la página web" },
+            { v: "App", label: "En la app del celular" },
+            { v: "Taquilla", label: "En la taquilla del cine" },
+            { v: "Autoservicio", label: "En el autoservicio (kiosco) del cine" },
+            { v: "Otro medio", label: "Otro medio (bancos, plataformas, etc.)" },
+          ],
+        },
+        {
+          key: "p3_tarjeta", type: "single", required: true,
+          title: "¿Tienes Tarjeta Cineco?",
+          options: ["Sí", "No", "No sé qué es"],
+          inline: true,
+        },
+      ],
+    },
+    {
+      id: "s4", section: "descubrir",
+      fields: [{
+        key: "p4_inicio", type: "single", required: true,
+        title: "Es viernes y quieres ir a cine hoy, cerca de las 7 p. m. Abres la web: ¿por dónde empiezas?",
+        cards: true,
+        options: [
+          { v: "Película primero", label: "Por la película", desc: "Primero elijo qué ver y después busco cine y horario.", icon: "film" },
+          { v: "Cine primero", label: "Por el cine", desc: "Elijo mi cine y miro qué hay ahí.", icon: "pin" },
+          { v: "Hora primero", label: "Por la hora", desc: "Quiero ver lo que empieza cerca de las 7 p. m.", icon: "clock" },
+          { v: "Lista de funciones", label: "Todo junto", desc: "Una lista de las funciones de hoy que pueda filtrar.", icon: "list" },
+          { v: "Busco ideas", label: "No sé qué ver", desc: "Quiero que me recomienden algo.", icon: "spark" },
+        ],
+      }],
+    },
+    {
+      id: "s5", section: "descubrir",
+      fields: [{
+        key: "p5_primero", type: "single", required: true, shuffle: true,
+        title: "Cuando ves una película en la cartelera, ¿qué es lo primero que buscas?",
+        options: ["Horarios disponibles", "Tráiler", "Sinopsis", "Duración", "Clasificación por edad", "Formato (2D, 3D, IMAX…)", "Idioma (doblada o subtitulada)", "Reseñas o calificación"],
+      }],
+    },
+    {
+      id: "s6", section: "descubrir",
+      fields: [{
+        key: "p6_preventa", type: "single", required: true, shuffleExceptLast: true,
+        title: "Cuando una película dice «Preventa», ¿qué entiendes?",
+        options: [
+          { v: "Comprar para función futura", label: "Ya puedo comprar entradas para una función de otro día" },
+          { v: "Aviso, aún no se compra", label: "Es un aviso: todavía no puedo comprar" },
+          { v: "Precio especial anticipado", label: "Las entradas son más baratas por comprar antes" },
+          { v: "Se puede ver hoy", label: "Ya se puede ver hoy" },
+          { v: "No sé", label: "No estoy seguro/a" },
+        ],
+      }],
+    },
+    {
+      id: "s7", section: "descubrir",
+      fields: [
+        {
+          key: "p7_confusion", type: "single", required: true,
+          title: "¿Te ha pasado que una película parecía disponible, pero luego descubriste que aún no podías verla?",
+          options: ["Sí, varias veces", "Sí, una vez", "No", "No lo recuerdo"],
+        },
+        {
+          key: "p7_causa", type: "multi", required: true,
+          showIf: (a) => /^Sí/.test(a.p7_confusion || ""),
+          title: "¿Qué pasó?",
+          help: "Elige todo lo que te haya pasado.",
+          options: [
+            "Estaba en preventa y la función era otro día",
+            "Era un próximo estreno",
+            "No tenía funciones en mi cine",
+            "No había funciones a la hora que quería",
+            "Estaba agotada",
+            { v: "Otra cosa", label: "Otra cosa", other: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: "s8", section: "funcion",
+      fields: [{
+        key: "p8_filtros", type: "multi", required: true, max: 3, shuffle: true,
+        title: "Tienes poco tiempo y quieres encontrar una función específica. ¿Qué filtros usarías?",
+        help: "Elige hasta 3.",
+        options: ["Fecha", "Hora", "Cine o cercanía", "Película", "Formato (2D, 3D, IMAX…)", "Tipo de sala (general, preferencial, VIP)", "Idioma (doblada o subtitulada)", "Precio o promociones", "Puestos disponibles", "Clasificación por edad"],
+      }],
+    },
+    {
+      id: "s9", section: "funcion",
+      fields: [{
+        key: "p9_datos", type: "multi", required: true, max: 5, shuffle: true,
+        title: "Si solo pudieras ver 5 datos de una función antes de elegirla, ¿cuáles serían?",
+        help: "Elige hasta 5.",
+        options: ["Hora de inicio", "Hora de finalización", "Precio", "Formato", "Idioma", "Tipo de sala", "Puestos disponibles", "Cine y distancia", "Duración", "Clasificación por edad", "Promociones que aplican", "Puntos o beneficios Tarjeta Cineco"],
+      }],
+    },
+    {
+      id: "s10", section: "pago",
+      showIf: (a) => a.p3_tarjeta === "Sí",
+      fields: [
+        {
+          key: "p10_saldo_momento", type: "single", required: true,
+          title: "¿En qué momento esperas ver el saldo o los puntos de tu Tarjeta Cineco?",
+          options: [
+            { v: "Siempre visible", label: "Siempre visible, desde que inicio sesión" },
+            { v: "Al elegir la función", label: "Al elegir la función, para saber si me alcanza" },
+            { v: "En el resumen", label: "En el resumen, antes de pagar" },
+            { v: "Al elegir cómo pagar", label: "Solo cuando elijo cómo pagar" },
+            { v: "No lo necesito", label: "No necesito verlo" },
+          ],
+        },
+        {
+          key: "p10_saldo_como", type: "single", required: true,
+          title: "¿Cómo lo compruebas hoy?",
+          options: [
+            { v: "En la web durante la compra", label: "Lo veo en la web durante la compra" },
+            { v: "En la app antes de comprar", label: "Lo reviso en la app antes de comprar" },
+            { v: "Pregunto en taquilla", label: "Pregunto en taquilla" },
+            { v: "Me entero al pagar", label: "No lo compruebo: me entero al pagar" },
+            { v: "Otra forma", label: "Otra forma", other: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: "s11", section: "experiencia",
+      fields: [
+        {
+          key: "p11_salir", type: "single", required: true,
+          title: "¿Alguna vez saliste de una compra a medias para resolver algo y luego volviste?",
+          options: ["Sí, varias veces", "Sí, alguna vez", "No", "No lo recuerdo"],
+        },
+        {
+          key: "p11_motivo", type: "multi", required: true,
+          showIf: (a) => /^Sí/.test(a.p11_salir || ""),
+          title: "¿Para qué saliste?",
+          help: "Elige todo lo que aplique.",
+          options: [
+            "Revisar mi saldo o puntos",
+            "Confirmar con quienes iba (hora, sillas)",
+            "Buscar un código o promoción",
+            "Comparar otro cine u horario",
+            "Resolver un problema de pago",
+            "Se acabó el tiempo de la reserva",
+            "Iniciar sesión o recuperar contraseña",
+            { v: "Otra cosa", label: "Otra cosa", other: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: "s12", section: "experiencia",
+      fields: [
+        {
+          key: "p12_comida", type: "single", required: true,
+          title: "Mientras compras tus entradas te ofrecen comida. ¿Qué prefieres?",
+          options: [
+            { v: "Ofrecer en el flujo", label: "Que me la ofrezcan en el camino; me sirve" },
+            { v: "Saltable con un clic", label: "Poder saltarla con un solo clic" },
+            { v: "Al final, después de pagar", label: "Verla al final, después de pagar las entradas" },
+            { v: "No mostrarla", label: "Que no aparezca; la compro en el cine" },
+          ],
+        },
+        {
+          key: "p12_porque", type: "text", required: false,
+          title: "¿Por qué?",
+          optionalLabel: true,
+          placeholder: "Cuéntanos en una frase",
+        },
+      ],
+    },
+    {
+      id: "s13", section: "experiencia",
+      fields: [{
+        key: "p13_frustraciones", type: "multi", required: true, max: 3, shuffle: true,
+        title: "¿Qué es lo más frustrante de comprar entradas de cine online?",
+        help: "Elige hasta 3.",
+        options: [
+          "Demasiados pasos para comprar",
+          "Encontrar horarios toma mucho tiempo",
+          "No es claro qué se puede ver hoy y qué no",
+          "El precio final aparece muy tarde",
+          "Elegir sillas es difícil",
+          "El tiempo para pagar se acaba",
+          "La oferta de comida interrumpe",
+          "Problemas con el pago",
+          "Iniciar sesión o registrarme",
+          "No veo mi saldo o puntos Cineco",
+          "La página es lenta o se cae",
+          { v: "Otra", label: "Otra", other: true, fixed: true },
+          { v: "Nada me frustra", label: "Nada me frustra", exclusive: true, fixed: true },
+        ],
+      }],
+    },
+    {
+      id: "s14", section: "experiencia",
+      fields: [
+        {
+          key: "p14_cambio", type: "text", required: false, long: true,
+          title: "Si pudieras cambiar UNA sola cosa al comprar entradas, ¿qué cambiarías?",
+          help: "Piensa en cómo compras tú realmente. Lo que sea: grande o pequeño.",
+          placeholder: "Por ejemplo: ver todas las funciones de hoy en mi cine en una sola pantalla…",
+        },
+        {
+          key: "email", type: "email", required: false, private: true,
+          title: "¿Te gustaría participar en una entrevista corta (20 min)?",
+          help: "Déjanos tu correo y te escribimos. Se guarda aparte de tus respuestas y solo lo usaremos para esto.",
+          optionalLabel: true,
+          placeholder: "tu@correo.com",
+        },
+      ],
+    },
+  ],
+
+  /* Orden fijo de columnas en Google Sheets */
+  meta: ["id", "fecha", "version", "fuente", "dispositivo", "duracion_seg"],
+};
+
+/* Utilidades compartidas */
+SURVEY.optValue = (o) => (typeof o === "string" ? o : o.v);
+SURVEY.optLabel = (o) => (typeof o === "string" ? o : o.label || o.v);
+/* Ojo: los strings tienen métodos heredados como .fixed(), por eso se comprueba el tipo */
+SURVEY.flag = (o, k) => typeof o === "object" && o !== null && !!o[k];
+SURVEY.allFields = () => SURVEY.screens.flatMap((s) => s.fields.map((f) => ({ ...f, screen: s })));
+SURVEY.columns = () => {
+  const cols = [...SURVEY.meta];
+  SURVEY.allFields().forEach((f) => {
+    if (f.private) return;
+    cols.push(f.key);
+    if (f.options && f.options.some((o) => SURVEY.flag(o, "other"))) cols.push(f.key + "_otro");
+  });
+  return cols;
+};
+
+</script>
+<script>
+(() => {
+  "use strict";
+  const $ = (s, el = document) => el.querySelector(s);
+  const h = (tag, attrs = {}, kids = []) => {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v == null || v === false) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k === "style") n.setAttribute("style", v);
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    [].concat(kids).forEach((c) => c != null && n.append(c));
+    return n;
+  };
+  const pct = (x) => (isFinite(x) ? Math.round(x * 100) + "%" : "–");
+  const SERIES = ["var(--s1)", "var(--s2)", "var(--s3)", "var(--s4)"];
+
+  /* ---------- Metadatos de análisis por pregunta ---------- */
+  const META = {
+    p1_frecuencia: { short: "Frecuencia", ordinal: true, decide: "Si optimizar para la recompra rápida (frecuentes) o para orientar (ocasionales)." },
+    p2_cadenas: { short: "Cadenas", decide: "Qué competidores conoce tu audiencia: referentes de patrones a revisar." },
+    p2_ciudad: { short: "Ciudad", decide: "Representatividad de la muestra." },
+    p3_canal: { short: "Canal", decide: "Qué canal priorizar y si la web debe parecerse a la app." },
+    p3_tarjeta: { short: "Tarjeta Cineco", decide: "Cuánto pesa el flujo de pago con Tarjeta Cineco." },
+    p4_inicio: { short: "Por dónde empiezan", phrase: "como punto de partida para buscar función", decide: "Arquitectura de la cartelera: entrada por película, por cine o por hora." },
+    p5_primero: { short: "Lo primero que buscan", phrase: "como lo primero que buscan en una película", decide: "Jerarquía de la ficha de película: qué va arriba." },
+    p6_preventa: { short: "Qué entienden por «Preventa»", phrase: "como significado de «Preventa»", correct: "Comprar para función futura", decide: "Si «Preventa» se entiende o hay que renombrar o explicar el estado." },
+    p7_confusion: { short: "Parecía disponible y no", ordinal: true, collapse: { "Sí, varias veces": "Sí", "Sí, una vez": "Sí" }, phraseYes: "les ha pasado que una película parecía disponible y no lo estaba", decide: "Tamaño del problema de disponibilidad en la cartelera." },
+    p7_causa: { short: "Causa de la confusión", phrase: "como causa de la confusión", decide: "Qué estados (preventa, próximamente, sin funciones, agotada) deben distinguirse a simple vista." },
+    p8_filtros: { short: "Filtros", phrase: "como filtro", decide: "Qué filtros quedan visibles por defecto y cuáles van a «Más filtros»." },
+    p9_datos: { short: "5 datos de una función", phrase: "entre los 5 datos clave de una función", decide: "Contenido mínimo de la tarjeta de función." },
+    p10_saldo_momento: { short: "Cuándo ver saldo/puntos", phrase: "como momento para ver su saldo Cineco", decide: "En qué paso mostrar saldo y puntos de la Tarjeta Cineco." },
+    p10_saldo_como: { short: "Cómo revisan su saldo", phrase: "como forma de revisar su saldo", decide: "Si hoy el saldo es invisible hasta el momento de pagar." },
+    p11_salir: { short: "Salieron de la compra", ordinal: true, collapse: { "Sí, varias veces": "Sí", "Sí, alguna vez": "Sí" }, phraseYes: "han salido de una compra a medias para resolver algo", decide: "Tamaño del abandono temporal del flujo." },
+    p11_motivo: { short: "Por qué salieron", phrase: "como motivo para salir de la compra", decide: "Qué información traer dentro del flujo para evitar salidas." },
+    p12_comida: { short: "Comida en la compra", phrase: "para la oferta de comida", decide: "Ubicación de la confitería: en el flujo, saltable o después de pagar." },
+    p13_frustraciones: { short: "Frustraciones", phrase: "como frustración", decide: "Backlog priorizado de fricciones a resolver." },
+  };
+
+  /* ---------- Segmentos (orden fijo = color fijo) ---------- */
+  const SEGMENTS = {
+    canal: {
+      label: "Canal de compra", src: ["p3_canal"],
+      groups: ["Web", "App", "Presencial", "Otro medio"],
+      of: (r) => ({ Web: "Web", App: "App", Taquilla: "Presencial", Autoservicio: "Presencial", "Otro medio": "Otro medio" })[r.p3_canal] || null,
+    },
+    frecuencia: {
+      label: "Frecuencia", src: ["p1_frecuencia"],
+      groups: ["Frecuente (1+ al mes)", "Ocasional"],
+      of: (r) => !r.p1_frecuencia ? null : (["Varias veces al mes", "Una vez al mes"].includes(r.p1_frecuencia) ? "Frecuente (1+ al mes)" : "Ocasional"),
+    },
+    tarjeta: {
+      label: "Tarjeta Cineco", src: ["p3_tarjeta", "p10_saldo_momento", "p10_saldo_como"],
+      groups: ["Con tarjeta", "Sin tarjeta"],
+      of: (r) => !r.p3_tarjeta ? null : (r.p3_tarjeta === "Sí" ? "Con tarjeta" : "Sin tarjeta"),
+    },
+    dispositivo: {
+      label: "Dispositivo", src: [],
+      groups: ["Móvil o tablet", "Escritorio"],
+      of: (r) => !r.dispositivo ? null : (r.dispositivo === "Escritorio" ? "Escritorio" : "Móvil o tablet"),
+    },
+    cadenas: {
+      label: "Otras cadenas", src: ["p2_cadenas"],
+      groups: ["Solo Cine Colombia", "También otras cadenas"],
+      of: (r) => {
+        const l = split(r.p2_cadenas);
+        if (!l.length) return null;
+        return l.every((x) => x === "Cine Colombia") ? "Solo Cine Colombia" : "También otras cadenas";
+      },
+    },
+  };
+
+  /* ---------- Estado ---------- */
+  const state = { raw: [], rows: [], filters: {}, compare: "", excludeSpeeders: true, sample: false, label: "", url: "", openTerm: "", openTheme: "", openKind: "" };
+  const FIELDS = SURVEY.allFields().filter((f) => !f.private);
+  const FIELD = Object.fromEntries(FIELDS.map((f) => [f.key, f]));
+
+  function split(v) { return v ? String(v).split("|").map((s) => s.trim()).filter(Boolean) : []; }
+
+  /* ---------- CSV ---------- */
+  function parseCSV(text) {
+    const rows = []; let row = []; let field = ""; let q = false;
+    text = text.replace(/^﻿/, "");
+    for (let i = 0; i < text.length; i++) {
+      const c = text[i];
+      if (q) {
+        if (c === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else q = false; }
+        else field += c;
+      } else if (c === '"') q = true;
+      else if (c === ",") { row.push(field); field = ""; }
+      else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        row.push(field); rows.push(row); row = []; field = "";
+      } else field += c;
+    }
+    if (field !== "" || row.length) { row.push(field); rows.push(row); }
+    const head = (rows.shift() || []).map((s) => s.trim());
+    return rows.filter((r) => r.some((x) => x !== "")).map((r) => Object.fromEntries(head.map((k, i) => [k, (r[i] || "").trim()])));
+  }
+  function toCSV(rows) {
+    const cols = SURVEY.columns();
+    const esc = (v) => { v = v == null ? "" : String(v); return /[",\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+    return [cols.join(",")].concat(rows.map((r) => cols.map((c) => esc(r[c])).join(","))).join("\n");
+  }
+
+  /* ---------- Carga ---------- */
+  function setData(rows, label, opts = {}) {
+    if (!rows.length || !("p1_frecuencia" in rows[0])) {
+      $("#sourceErr").textContent = "El archivo no parece venir de esta encuesta (no encuentro la columna p1_frecuencia). Revisa que sea la hoja «Respuestas».";
+      return;
+    }
+    state.raw = rows;
+    state.sample = !!opts.sample;
+    state.label = label;
+    state.loadedAt = new Date();
+    $("#sourceErr").textContent = "";
+    $("#source").hidden = true;
+    $("#dash").classList.remove("hidden");
+    $("#sampleBanner").hidden = !state.sample;
+    ["#btnCopy", "#btnCsv"].forEach((s) => ($(s).hidden = false));
+    $("#btnReload").hidden = !state.url;
+    buildFilters();
+    render();
+  }
+  async function loadUrl(url) {
+    $("#sourceErr").textContent = "";
+    try {
+      const res = await fetch(url, { cache: "no-store" });
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      const text = await res.text();
+      if (/^\s*</.test(text)) throw new Error("No es un CSV");
+      state.url = url;
+      setData(parseCSV(text), "Google Sheets (enlace publicado)");
+    } catch (e) {
+      $("#source").hidden = false;
+      $("#sourceErr").textContent = "No pude leer ese enlace. Verifica que la hoja esté publicada como CSV (Archivo → Compartir → Publicar en la web) o sube el archivo CSV. Detalle: " + e.message;
+    }
+  }
+  $("#btnUrl").addEventListener("click", () => { const u = $("#csvUrl").value.trim(); if (u) loadUrl(u); });
+  $("#csvFile").addEventListener("change", (e) => {
+    const f = e.target.files[0]; if (!f) return;
+    f.text().then((t) => { state.url = ""; setData(parseCSV(t), "Archivo: " + f.name); });
+  });
+  $("#btnSample").addEventListener("click", () => { state.url = ""; setData(sampleData(), "Datos de ejemplo", { sample: true }); });
+  $("#btnSource").addEventListener("click", () => { const s = $("#source"); s.hidden = !s.hidden; if (!s.hidden) s.scrollIntoView({ behavior: "smooth" }); });
+  $("#btnReload").addEventListener("click", () => state.url && loadUrl(state.url));
+
+  /* ---------- Filtros ---------- */
+  function buildFilters() {
+    const row = $("#filtersRow");
+    row.replaceChildren();
+    const mkSelect = (id, label, options, value, onchange, cls = "") => {
+      const sel = h("select", { id: "f_" + id });
+      options.forEach(([v, t]) => sel.append(h("option", { value: v, text: t })));
+      sel.value = value || "";
+      sel.addEventListener("change", () => onchange(sel.value));
+      return h("div", { class: "f " + cls }, [h("label", { for: "f_" + id, text: label }), sel]);
+    };
+    const comp = [["", "Sin comparar"]].concat(Object.entries(SEGMENTS).map(([k, s]) => [k, s.label]));
+    row.append(mkSelect("compare", "Comparar por", comp, state.compare, (v) => { state.compare = v; render(); }, "compare"));
+    row.append(h("span", { class: "sep", "aria-hidden": "true" }));
+    Object.entries(SEGMENTS).forEach(([k, s]) => {
+      const opts = [["", "Todos"]].concat(s.groups.map((g) => [g, g]));
+      row.append(mkSelect(k, s.label, opts, state.filters[k], (v) => { state.filters[k] = v; render(); }));
+    });
+    const cities = [...new Set(state.raw.map((r) => r.p2_ciudad).filter(Boolean))].sort();
+    row.append(mkSelect("ciudad", "Ciudad", [["", "Todas"]].concat(cities.map((c) => [c, c])), state.filters.ciudad, (v) => { state.filters.ciudad = v; render(); }));
+    const sources = [...new Set(state.raw.map((r) => r.fuente).filter(Boolean))].sort();
+    if (sources.length > 1) row.append(mkSelect("fuente", "Fuente", [["", "Todas"]].concat(sources.map((c) => [c, c])), state.filters.fuente, (v) => { state.filters.fuente = v; render(); }));
+    const cb = h("input", { type: "checkbox", id: "speed" });
+    cb.checked = state.excludeSpeeders;
+    cb.addEventListener("change", () => { state.excludeSpeeders = cb.checked; render(); });
+    row.append(h("label", { class: "check", for: "speed" }, [cb, `Excluir respuestas de menos de ${CONFIG.SPEEDER_SECONDS} s`]));
+    row.append(h("button", { class: "btn small", type: "button", text: "Limpiar filtros", style: "margin-bottom:5px", onclick: () => { state.filters = {}; state.compare = ""; buildFilters(); render(); } }));
+  }
+
+  function applyFilters() {
+    let rows = state.raw;
+    let speeders = 0;
+    if (state.excludeSpeeders) {
+      rows = rows.filter((r) => { const d = parseFloat(r.duracion_seg); const fast = isFinite(d) && d < CONFIG.SPEEDER_SECONDS; if (fast) speeders++; return !fast; });
+    }
+    for (const [k, v] of Object.entries(state.filters)) {
+      if (!v) continue;
+      if (SEGMENTS[k]) rows = rows.filter((r) => SEGMENTS[k].of(r) === v);
+      else if (k === "ciudad") rows = rows.filter((r) => r.p2_ciudad === v);
+      else if (k === "fuente") rows = rows.filter((r) => r.fuente === v);
+    }
+    return { rows, speeders };
+  }
+
+  /* ---------- Cálculo ---------- */
+  function answered(rows, key) { return rows.filter((r) => r[key] != null && String(r[key]).trim() !== ""); }
+  function has(r, key, v) { const f = FIELD[key]; return f && f.type === "multi" ? split(r[key]).includes(v) : r[key] === v; }
+  function optionList(key, rows) {
+    const f = FIELD[key];
+    const base = (f.options || []).map(SURVEY.optValue);
+    const seen = new Set(base);
+    rows.forEach((r) => (f.type === "multi" ? split(r[key]) : [r[key]]).forEach((v) => { if (v && !seen.has(v)) { seen.add(v); base.push(v); } }));
+    return base;
+  }
+  function dist(rows, key) {
+    const b = answered(rows, key);
+    const opts = optionList(key, rows);
+    const items = opts.map((v) => { const c = b.filter((r) => has(r, key, v)).length; return { v, c, p: b.length ? c / b.length : NaN }; });
+    return { n: b.length, items };
+  }
+  function sortItems(key, items) {
+    const f = FIELD[key]; const m = META[key] || {};
+    if (m.ordinal) return items;
+    const tail = new Set((f.options || []).filter((o) => SURVEY.flag(o, "other") || SURVEY.flag(o, "exclusive") || SURVEY.flag(o, "fixed")).map(SURVEY.optValue).concat(["No sé", "Otro", "Otra cosa", "Otra forma", "Otra ciudad"]));
+    const head = items.filter((i) => !tail.has(i.v)).sort((a, b) => b.c - a.c);
+    return head.concat(items.filter((i) => tail.has(i.v)));
+  }
+  const median = (a) => { if (!a.length) return NaN; const s = a.slice().sort((x, y) => x - y); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+
+  /* ---------- Render ---------- */
+  function render() {
+    const { rows, speeders } = applyFilters();
+    state.rows = rows;
+    const total = state.raw.length;
+    $("#status").textContent = `${state.label} · ${total} respuestas en total · ${rows.length} en la vista actual` + (state.loadedAt ? ` · cargado ${state.loadedAt.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" })}` : "");
+    const small = $("#smallBanner");
+    small.hidden = rows.length >= 30;
+    small.textContent = rows.length < 30 ? `Hay ${rows.length} respuestas en esta vista. Con menos de 30, cada persona mueve los porcentajes varios puntos: léelos como señales, no como conclusiones.` : "";
+    renderLegend($("#globalLegend"), rows);
+    renderKPIs(rows, speeders);
+    renderInsights(rows);
+    renderDiffs(rows);
+    renderSections(rows);
+    renderOpen(rows);
+    $("#foot").textContent = `Base de cada gráfico: personas que respondieron esa pregunta en la vista actual. En preguntas de selección múltiple los porcentajes suman más de 100%. ${speeders ? speeders + " respuestas excluidas por durar menos de " + CONFIG.SPEEDER_SECONDS + " s." : ""}`;
+  }
+
+  function groupsFor(rows) {
+    if (!state.compare) return null;
+    const seg = SEGMENTS[state.compare];
+    return seg.groups.map((g, i) => ({ name: g, color: SERIES[i], rows: rows.filter((r) => seg.of(r) === g) })).filter((g) => g.rows.length);
+  }
+
+  function renderLegend(el, rows) {
+    el.replaceChildren();
+    const groups = groupsFor(rows);
+    if (!groups) return;
+    groups.forEach((g) => el.append(h("span", { class: "key" }, [h("span", { class: "swatch", style: `background:${g.color}` }), `${g.name} (n=${g.rows.length})`])));
+  }
+
+  function tile(label, value, sub, hero) {
+    return h("div", { class: "tile" + (hero ? " hero" : "") }, [h("div", { class: "label", text: label }), h("div", { class: "value", text: value }), sub ? h("div", { class: "sub", text: sub }) : null]);
+  }
+  function renderKPIs(rows, speeders) {
+    const n = rows.length;
+    const dur = median(rows.map((r) => parseFloat(r.duracion_seg)).filter(isFinite));
+    const mm = isFinite(dur) ? `${Math.floor(dur / 60)}:${String(Math.round(dur % 60)).padStart(2, "0")} min` : "–";
+    const share = (fn) => (n ? rows.filter(fn).length / n : NaN);
+    $("#kpis").replaceChildren(
+      tile("Respuestas en la vista", n.toLocaleString("es-CO"), speeders ? `${speeders} excluidas por rapidez` : "Todas incluidas", true),
+      tile("Tiempo mediano", mm, "para completar la encuesta"),
+      tile("Respondieron desde el celular", pct(share((r) => r.dispositivo && r.dispositivo !== "Escritorio"))),
+      tile("Compran online (web o app)", pct(share((r) => r.p3_canal === "Web" || r.p3_canal === "App"))),
+      tile("Tienen Tarjeta Cineco", pct(share((r) => r.p3_tarjeta === "Sí"))),
+    );
+  }
+
+  /* ---------- Hallazgos clave ---------- */
+  function top(key, rows, k = 1) { const d = dist(rows, key); return { n: d.n, items: sortItems(key, d.items).filter((i) => i.c > 0).slice(0, k), all: d.items }; }
+  const q = (s) => `«${s}»`;
+  function insights(rows) {
+    const out = [];
+    const add = (o) => out.push(o);
+    // Cartelera
+    const p4 = dist(rows, "p4_inicio");
+    if (p4.n) {
+      const by = Object.fromEntries(p4.items.map((i) => [i.v, i.p]));
+      const s = sortItems("p4_inicio", p4.items);
+      const lead = s[0], second = s[1];
+      let decision;
+      if (lead.p < 0.4) decision = "No hay un único modelo mental: la cartelera necesita entradas claras por película, por cine y por hora desde el inicio.";
+      else if (lead.v === "Película primero") decision = "Abre la cartelera por películas y deja cine y horario como filtros visibles arriba.";
+      else if (lead.v === "Cine primero") decision = "Haz que el cine elegido se recuerde y que la cartelera arranque ya filtrada por él.";
+      else if (lead.v === "Hora primero" || lead.v === "Lista de funciones") decision = "Una vista «Funciones de hoy» ordenada por hora tiene respaldo como entrada principal.";
+      else decision = "Hay demanda de descubrimiento: considera recomendaciones o destacados antes del listado.";
+      add({ tag: "Cartelera", stat: pct(lead.p), text: `empezaría ${lead.v === "Busco ideas" ? "buscando ideas" : "por " + ({ "Película primero": "la película", "Cine primero": "el cine", "Hora primero": "la hora", "Lista de funciones": "una lista de funciones de hoy" }[lead.v] || lead.v)}; ${pct(second.p)} ${({ "Película primero": "por la película", "Cine primero": "por el cine", "Hora primero": "por la hora", "Lista de funciones": "por la lista de funciones", "Busco ideas": "buscando ideas" }[second.v] || second.v)}.`, decision, n: p4.n });
+    }
+    // Preventa
+    const p6 = dist(rows, "p6_preventa");
+    if (p6.n) {
+      const ok = p6.items.find((i) => i.v === META.p6_preventa.correct);
+      const wrong = sortItems("p6_preventa", p6.items).filter((i) => i.v !== ok.v && i.c)[0];
+      add({ tag: "Etiquetas", stat: pct(1 - ok.p), text: `no interpreta «Preventa» como «ya puedo comprar para otro día».${wrong ? ` La lectura equivocada más común: ${q(wrong.v)} (${pct(wrong.p)}).` : ""}`,
+        decision: ok.p < 0.7 ? "La etiqueta confunde: prueba un texto explícito, p. ej. «Compra anticipada · estreno el 12 dic»." : "La etiqueta se entiende; mantenla y refuérzala con la fecha de estreno.", n: p6.n });
+    }
+    // Disponibilidad
+    const p7 = answered(rows, "p7_confusion");
+    if (p7.length) {
+      const yes = p7.filter((r) => /^Sí/.test(r.p7_confusion)).length / p7.length;
+      const c = top("p7_causa", rows, 1).items[0];
+      add({ tag: "Disponibilidad", stat: pct(yes), text: `creyó que una película estaba disponible y no lo estaba.${c ? ` Causa más común: ${q(c.v)} (${pct(c.p)} de quienes les pasó).` : ""}`,
+        decision: "Diferencia visualmente «se puede ver hoy», «preventa», «próximamente» y «sin funciones en tu cine».", n: p7.length });
+    }
+    // Filtros
+    const f = top("p8_filtros", rows, 3);
+    if (f.n && f.items.length) add({ tag: "Filtros", stat: pct(f.items[0].p), text: `usaría ${q(f.items[0].v)} como filtro. Le siguen ${f.items.slice(1).map((i) => `${q(i.v)} (${pct(i.p)})`).join(" y ")}.`, decision: `Deja visibles por defecto: ${f.items.map((i) => i.v).join(", ")}. El resto puede ir en «Más filtros».`, n: f.n });
+    // Datos de función
+    const d = top("p9_datos", rows, 5);
+    if (d.n && d.items.length) {
+      const seats = dist(rows, "p9_datos").items.find((i) => i.v === "Puestos disponibles");
+      add({ tag: "Tarjeta de función", stat: pct(seats ? seats.p : NaN), text: `incluye «Puestos disponibles» entre sus 5 datos clave. El top 5: ${d.items.map((i) => `${i.v} (${pct(i.p)})`).join(", ")}.`, decision: "Diseña la tarjeta de función con esos 5 datos; lo demás, al tocarla.", n: d.n });
+    }
+    // Saldo Cineco
+    const s = top("p10_saldo_momento", rows, 1);
+    if (s.n && s.items.length) {
+      const late = dist(rows, "p10_saldo_como").items.find((i) => i.v === "Me entero al pagar");
+      add({ tag: "Tarjeta Cineco", stat: pct(s.items[0].p), text: `de quienes tienen Tarjeta Cineco espera ver su saldo ${q(s.items[0].v.toLowerCase())}.${late && late.c ? ` Hoy, ${pct(late.p)} se entera solo al pagar.` : ""}`, decision: "Muestra saldo y puntos en el momento que la mayoría espera, no solo en el paso de pago.", n: s.n });
+    }
+    // Salir del flujo
+    const p11 = answered(rows, "p11_salir");
+    if (p11.length) {
+      const yes = p11.filter((r) => /^Sí/.test(r.p11_salir)).length / p11.length;
+      const m = top("p11_motivo", rows, 1).items[0];
+      add({ tag: "Interrupciones", stat: pct(yes), text: `ha salido de una compra a medias para resolver algo.${m ? ` Motivo principal: ${q(m.v)} (${pct(m.p)}).` : ""}`, decision: "Trae esa información al flujo (o permite pausar la compra sin perderla).", n: p11.length });
+    }
+    // Comida
+    const p12 = dist(rows, "p12_comida");
+    if (p12.n) {
+      const inflow = p12.items.find((i) => i.v === "Ofrecer en el flujo");
+      const t = sortItems("p12_comida", p12.items)[0];
+      add({ tag: "Confitería", stat: pct(1 - inflow.p), text: `prefiere que la comida no interrumpa la compra. La opción favorita: ${q(t.v)} (${pct(t.p)}).`, decision: inflow.p < 0.3 ? "Convierte la confitería en un paso opcional y fácil de saltar, o muévela después del pago." : "La oferta en el flujo tiene aceptación: cuida que sea breve y fácil de omitir.", n: p12.n });
+    }
+    // Frustraciones
+    const fr = top("p13_frustraciones", rows, 3);
+    if (fr.n && fr.items.length) add({ tag: "Frustraciones", stat: pct(fr.items[0].p), text: `marca ${q(fr.items[0].v)} entre sus mayores frustraciones. Le siguen ${fr.items.slice(1).map((i) => `${q(i.v)} (${pct(i.p)})`).join(" y ")}.`, decision: "Prioriza estas tres fricciones en el rediseño y mídelas en pruebas de usabilidad.", n: fr.n });
+    // Lo primero
+    const p5 = top("p5_primero", rows, 2);
+    if (p5.n && p5.items.length) add({ tag: "Ficha de película", stat: pct(p5.items[0].p), text: `busca primero ${q(p5.items[0].v)}${p5.items[1] ? `; luego ${q(p5.items[1].v)} (${pct(p5.items[1].p)})` : ""}.`, decision: `Pon ${p5.items[0].v.toLowerCase()} en la parte visible de la ficha, sin tener que desplazarse.`, n: p5.n });
+    return out;
+  }
+  function renderInsights(rows) {
+    const list = insights(rows);
+    const el = $("#insights");
+    el.replaceChildren();
+    if (!list.length) { el.append(h("div", { class: "empty", text: "No hay suficientes respuestas en esta vista." })); return; }
+    list.forEach((i) => el.append(h("article", { class: "insight" }, [
+      h("span", { class: "tag", text: i.tag }),
+      h("div", { class: "stat", text: i.stat }),
+      h("p", { class: "text", text: i.text }),
+      h("p", { class: "decision" }, [h("b", { text: "Decisión: " }), i.decision]),
+    ])));
+    state.lastInsights = list;
+  }
+
+  /* ---------- Diferencias entre segmentos ---------- */
+  function zTest(c1, n1, c2, n2) {
+    const p = (c1 + c2) / (n1 + n2);
+    const se = Math.sqrt(p * (1 - p) * (1 / n1 + 1 / n2));
+    return se ? (c1 / n1 - c2 / n2) / se : 0;
+  }
+  function findDiffs(rows) {
+    const found = [];
+    for (const [sk, seg] of Object.entries(SEGMENTS)) {
+      if (state.filters[sk]) continue;
+      for (const key of Object.keys(META)) {
+        if (seg.src.includes(key) || ["p2_ciudad"].includes(key)) continue;
+        if (Object.values(SEGMENTS).some((s) => s.src[0] === key)) continue; // no comparar variables de segmento entre sí
+        const m = META[key];
+        const base = answered(rows, key);
+        const groups = seg.groups.map((g, gi) => ({ g, gi, rows: base.filter((r) => seg.of(r) === g) })).filter((x) => x.rows.length >= CONFIG.MIN_GROUP_N);
+        if (groups.length < 2) continue;
+        let opts = optionList(key, base).map((v) => ({ v, test: (r) => has(r, key, v), label: `${q(v)} ${m.phrase || ""}`.trim() }));
+        if (m.collapse) opts = [{ v: "Sí", test: (r) => m.collapse[r[key]] === "Sí", label: m.phraseYes }];
+        for (const o of opts) {
+          const ps = groups.map((x) => { const c = x.rows.filter(o.test).length; return { ...x, c, n: x.rows.length, p: c / x.rows.length }; });
+          const hi = ps.reduce((a, b) => (b.p > a.p ? b : a));
+          const lo = ps.reduce((a, b) => (b.p < a.p ? b : a));
+          const gap = hi.p - lo.p;
+          if (gap < 0.15 || hi.c < 5) continue;
+          const z = zTest(hi.c, hi.n, lo.c, lo.n);
+          if (Math.abs(z) < 2.58) continue;
+          found.push({ seg: seg.label, sk, key, opt: o, hi, lo, gap, z, all: ps, collapse: !!m.collapse });
+        }
+      }
+    }
+    found.sort((a, b) => b.z - a.z);
+    return found;
+  }
+  const cap = (s) => s.charAt(0).toUpperCase() + s.slice(1);
+  const diffText = (d) => `${cap(d.opt.label)}: ${d.hi.g} ${pct(d.hi.p)} frente a ${d.lo.g} ${pct(d.lo.p)}.`;
+  function miniBars(entries) {
+    return h("div", { class: "mini" }, entries.map((e) => h("div", { class: "mini-row" }, [
+      h("span", { text: e.name }),
+      h("div", { class: "bar-track" }, [h("div", { class: "bar g", style: `width:${(e.p * 100).toFixed(1)}%;background:${e.color};height:10px` })]),
+      h("span", { class: "v", text: pct(e.p) }),
+    ])));
+  }
+  function renderDiffs(rows) {
+    const el = $("#diffs");
+    const list = findDiffs(rows).slice(0, 10);
+    state.lastDiffs = list;
+    el.replaceChildren();
+    if (!list.length) {
+      el.append(h("div", { class: "empty", text: rows.length < 60 ? "Aún no hay suficientes respuestas para detectar diferencias confiables entre grupos (se necesitan grupos de al menos " + CONFIG.MIN_GROUP_N + " personas)." : "No aparecen diferencias grandes entre grupos: los segmentos se comportan de forma parecida en esta vista." }));
+      return;
+    }
+    list.forEach((d) => {
+      const text = diffText(d);
+      el.append(h("div", { class: "diff" }, [
+        h("div", {}, [h("div", { class: "what", text: text }), h("div", { class: "meta", text: `${d.seg} · ${META[d.key].short} · diferencia de ${Math.round(d.gap * 100)} pts (z = ${d.z.toFixed(1)})` })]),
+        miniBars(d.all.sort((a, b) => a.gi - b.gi).map((x) => ({ name: `${x.g} (n=${x.n})`, p: x.p, color: SERIES[x.gi] }))),
+      ]));
+    });
+  }
+
+  /* ---------- Gráficos por pregunta ---------- */
+  const tooltip = $("#tooltip");
+  function showTip(evt, title, lines) {
+    tooltip.replaceChildren(h("div", { class: "tt-title", text: title }), ...lines.map((l) => h("div", { class: "tt-row" }, [l.color ? h("span", { class: "lk", style: `background:${l.color}` }) : null, h("b", { text: l.value }), h("span", { text: l.label })])));
+    tooltip.classList.add("on");
+    let x, y;
+    if (evt.type === "focus") { const r = evt.target.getBoundingClientRect(); x = r.left + r.width * 0.5; y = r.bottom + 6; }
+    else { x = evt.clientX + 14; y = evt.clientY + 14; }
+    const tw = tooltip.offsetWidth, th = tooltip.offsetHeight;
+    tooltip.style.left = Math.min(x, innerWidth - tw - 8) + "px";
+    tooltip.style.top = (y + th > innerHeight - 8 ? y - th - 28 : y) + "px";
+  }
+  const hideTip = () => tooltip.classList.remove("on");
+
+  function chartCard(key, rows) {
+    const f = FIELD[key]; const m = META[key] || {};
+    const d = dist(rows, key);
+    const card = h("article", { class: "qcard" });
+    card.append(h("h3", { text: f.title }));
+    card.append(h("p", { class: "decide" }, [h("b", { text: "Ayuda a decidir: " }), m.decide || ""]));
+    const groups = groupsFor(rows);
+    const multiNote = f.type === "multi" ? " · selección múltiple" : "";
+    card.append(h("p", { class: "base", text: `Base: ${d.n} personas${multiNote}${f.showIf || f.screen.showIf ? " · pregunta condicional" : ""}` }));
+    if (!d.n) { card.append(h("div", { class: "empty", text: "Sin respuestas en esta vista." })); return card; }
+
+    let items = sortItems(key, d.items);
+    if (items.length > 12) items = items.filter((i) => i.c > 0);
+    let gstats = null;
+    if (groups) {
+      card.append(h("div", { class: "legend" }, groups.map((g) => h("span", { class: "key" }, [h("span", { class: "swatch", style: `background:${g.color}` }), g.name]))));
+      gstats = groups.map((g) => ({ ...g, d: Object.fromEntries(dist(g.rows, key).items.map((i) => [i.v, i])), n: answered(g.rows, key).length }));
+    }
+    const bars = h("div", { class: "bars", role: "list" });
+    items.forEach((it) => {
+      const label = h("div", { class: "bar-label", text: it.v });
+      if (m.correct === it.v) label.append(" ", h("span", { class: "tagc", text: "✓ correcto" }));
+      const track = h("div", { class: "bar-track" });
+      let val, tipLines;
+      if (gstats) {
+        gstats.forEach((g) => { const gi = g.d[it.v] || { p: 0, c: 0 }; track.append(h("div", { class: "bar g", style: `width:${((gi.p || 0) * 100).toFixed(1)}%;background:${g.color}` })); });
+        val = h("div", { class: "bar-val", text: "" });
+        tipLines = gstats.map((g) => { const gi = g.d[it.v] || { p: NaN, c: 0 }; return { color: g.color, value: pct(gi.p), label: `${g.name} · ${gi.c} de ${g.n}` }; });
+      } else {
+        track.append(h("div", { class: "bar", style: `width:${(it.p * 100).toFixed(1)}%` }));
+        val = h("div", { class: "bar-val", text: pct(it.p) });
+        tipLines = [{ value: pct(it.p), label: `${it.c} de ${d.n} personas` }];
+      }
+      const rowEl = h("div", { class: "bar-row", role: "listitem", tabindex: "0", "aria-label": `${it.v}: ${gstats ? tipLines.map((l) => l.label.split(" · ")[0] + " " + l.value).join(", ") : pct(it.p) + ", " + it.c + " de " + d.n}` }, [label, track, val]);
+      const tip = (e) => showTip(e, it.v, tipLines);
+      rowEl.addEventListener("pointermove", tip);
+      rowEl.addEventListener("focus", tip);
+      rowEl.addEventListener("pointerleave", hideTip);
+      rowEl.addEventListener("blur", hideTip);
+      bars.append(rowEl);
+    });
+    card.append(bars);
+
+    // Vista de tabla
+    const table = h("table", { class: "tv hidden" });
+    const head = h("tr", {}, [h("th", { text: "Opción" })]);
+    if (gstats) gstats.forEach((g) => head.append(h("th", { text: `${g.name} (n=${g.n})` })));
+    else head.append(h("th", { text: "Personas" }), h("th", { text: "%" }));
+    table.append(h("thead", {}, head));
+    const tb = h("tbody");
+    items.forEach((it) => {
+      const tr = h("tr", {}, [h("td", { text: it.v })]);
+      if (gstats) gstats.forEach((g) => { const gi = g.d[it.v] || { p: NaN, c: 0 }; tr.append(h("td", { text: `${pct(gi.p)} (${gi.c})` })); });
+      else tr.append(h("td", { text: it.c }), h("td", { text: pct(it.p) }));
+      tb.append(tr);
+    });
+    table.append(tb);
+    card.append(table);
+    const tbtn = h("button", { class: "btn small", type: "button", text: "Ver tabla", "aria-expanded": "false" });
+    tbtn.addEventListener("click", () => { const on = table.classList.toggle("hidden"); tbtn.textContent = on ? "Ver tabla" : "Ocultar tabla"; tbtn.setAttribute("aria-expanded", String(!on)); });
+    card.append(h("footer", {}, [tbtn]));
+    return card;
+  }
+
+  function renderSections(rows) {
+    const wrap = $("#sections");
+    wrap.replaceChildren();
+    const bySection = {};
+    SURVEY.screens.forEach((s) => s.fields.forEach((f) => { if (!f.private && (f.type === "single" || f.type === "multi" || f.type === "select")) (bySection[s.section] = bySection[s.section] || []).push(f.key); }));
+    Object.entries(SURVEY.sections).forEach(([sid, title]) => {
+      const keys = bySection[sid];
+      if (!keys) return;
+      const grid = h("div", { class: "qgrid" }, keys.map((k) => chartCard(k, rows)));
+      wrap.append(h("section", { class: "block", "aria-label": title }, [h("div", { class: "block-head" }, [h("div", {}, [h("p", { class: "eyebrow", text: "Sección" }), h("h2", { text: title })])]), grid]));
+    });
+  }
+
+  /* ---------- Respuestas abiertas ---------- */
+  const THEMES = [
+    ["Rapidez y menos pasos", /(paso|rápid|rapid|fácil|facil|simple|demor|lent|clic|click|tiempo)/i],
+    ["Horarios y funciones", /(horari|funci|hora\b|hoy|cartelera)/i],
+    ["Sillas y puestos", /(silla|puesto|asiento|ubicaci)/i],
+    ["Precio y promociones", /(precio|caro|cost|tarifa|valor|promo|descuent|cobr)/i],
+    ["Pago, saldo y puntos", /(pag|saldo|punto|tarjeta|cineco|nequi|pse|daviplata)/i],
+    ["Comida", /(comida|confiter|combo|crispeta|palomita|snack)/i],
+    ["Cuenta e inicio de sesión", /(sesi|registr|contraseñ|login|cuenta|usuario)/i],
+    ["Disponibilidad y preventa", /(preventa|estreno|próxim|proxim|disponib|agotad)/i],
+    ["App y web", /(app|aplicaci|web|página|pagina|celular|móvil|movil|se cae|caíd|error)/i],
+  ];
+  const STOP = new Set("a al algo así como con cuando de del desde donde el ella en entre era es esa ese eso esta este esto fue ha hay la las le lo los más mas me mi mis muy no o para pero por porque que qué se sea ser si sí sin sobre solo su sus también tener tengo todo todos tu tus un una uno unos y ya yo poder puedo puede quiero quisiera debería deberia sería seria tanto cada otra otro hace hacer vez veces tan bien mucho mucha casi nunca siempre allá aquí según antes después algo cosa cosas mismo misma están estaba están".split(" "));
+  function texts(rows) {
+    const out = [];
+    rows.forEach((r) => {
+      if (r.p14_cambio) out.push({ t: r.p14_cambio, k: "Cambiaría", r });
+      if (r.p12_porque) out.push({ t: r.p12_porque, k: "Comida · por qué", r });
+      Object.keys(r).filter((c) => c.endsWith("_otro") && r[c]).forEach((c) => out.push({ t: r[c], k: "Otra · " + (META[c.replace(/_otro$/, "")] || {}).short, r }));
+    });
+    return out;
+  }
+  function renderOpen(rows) {
+    const all = texts(rows).filter((x) => !state.openKind || x.k.startsWith(state.openKind));
+    const tc = $("#themesCard");
+    tc.replaceChildren(h("h3", { text: "Temas mencionados" }), h("p", { class: "base", text: `Clasificación automática por palabras clave en ${all.length} textos. Una respuesta puede tocar varios temas.` }));
+    const counts = THEMES.map(([name, re]) => ({ v: name, c: all.filter((x) => re.test(x.t)).length })).filter((x) => x.c).sort((a, b) => b.c - a.c);
+    const bars = h("div", { class: "bars" });
+    counts.forEach((it) => {
+      const p = all.length ? it.c / all.length : 0;
+      const row = h("div", { class: "bar-row", tabindex: "0", role: "button", "aria-pressed": String(state.openTheme === it.v), style: "cursor:pointer" + (state.openTheme && state.openTheme !== it.v ? ";opacity:.5" : "") }, [
+        h("div", { class: "bar-label", text: it.v }),
+        h("div", { class: "bar-track" }, [h("div", { class: "bar", style: `width:${(p * 100).toFixed(1)}%` })]),
+        h("div", { class: "bar-val", text: String(it.c) }),
+      ]);
+      const toggle = () => { state.openTheme = state.openTheme === it.v ? "" : it.v; renderOpen(state.rows); };
+      row.addEventListener("click", toggle);
+      row.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggle(); } });
+      row.addEventListener("pointermove", (e) => showTip(e, it.v, [{ value: String(it.c), label: `textos (${pct(p)})` }]));
+      row.addEventListener("pointerleave", hideTip);
+      bars.append(row);
+    });
+    if (!counts.length) bars.append(h("div", { class: "empty", text: "Aún no hay respuestas abiertas." }));
+    tc.append(bars);
+
+    // palabras frecuentes
+    const freq = {};
+    all.forEach((x) => new Set(x.t.toLowerCase().normalize("NFC").match(/[a-záéíóúñü]{4,}/g) || []).forEach((w) => { if (!STOP.has(w)) freq[w] = (freq[w] || 0) + 1; }));
+    const words = Object.entries(freq).sort((a, b) => b[1] - a[1]).slice(0, 18);
+    const chips = h("div", { class: "chips", "aria-label": "Palabras frecuentes" });
+    words.forEach(([w, c]) => {
+      const b = h("button", { class: "chip", type: "button", "aria-pressed": String(state.openTerm === w) }, [w, h("span", { class: "n", text: String(c) })]);
+      b.addEventListener("click", () => { state.openTerm = state.openTerm === w ? "" : w; $("#qsearch") && ($("#qsearch").value = state.openTerm); renderQuotes(all); renderOpenChips(); });
+      chips.append(b);
+    });
+    tc.append(h("h3", { text: "Palabras más repetidas", style: "margin-top:18px" }), chips);
+    renderOpenChips = () => chips.querySelectorAll(".chip").forEach((b) => b.setAttribute("aria-pressed", String(b.firstChild.textContent === state.openTerm)));
+
+    const qc = $("#quotesCard");
+    const search = h("input", { class: "search", id: "qsearch", type: "search", placeholder: "Buscar en las respuestas…", "aria-label": "Buscar en las respuestas" });
+    search.value = state.openTerm;
+    search.addEventListener("input", () => { state.openTerm = search.value.trim().toLowerCase(); renderQuotes(all); renderOpenChips(); });
+    const kinds = h("div", { class: "chips", role: "group", "aria-label": "Tipo de respuesta" });
+    [["", "Todas"], ["Cambiaría", "Lo que cambiarían"], ["Comida", "Comida: por qué"], ["Otra", "Respuestas «Otra»"]].forEach(([k, t]) => {
+      const b = h("button", { class: "chip", type: "button", "aria-pressed": String(state.openKind === k), text: t });
+      b.addEventListener("click", () => { state.openKind = k; renderOpen(state.rows); });
+      kinds.append(b);
+    });
+    qc.replaceChildren(h("h3", { text: "Respuestas" }), kinds, h("p", { class: "base", id: "quoteCount" }), search, h("div", { class: "quotes", id: "quotes" }));
+    renderQuotes(all);
+  }
+  let renderOpenChips = () => {};
+  function renderQuotes(all) {
+    const term = state.openTerm;
+    const theme = THEMES.find((t) => t[0] === state.openTheme);
+    const list = all.filter((x) => (!term || x.t.toLowerCase().includes(term)) && (!theme || theme[1].test(x.t)));
+    $("#quoteCount").textContent = `${list.length} de ${all.length} textos${state.openTheme ? " · tema: " + state.openTheme : ""}${term ? " · contiene «" + term + "»" : ""}`;
+    const box = $("#quotes");
+    box.replaceChildren();
+    list.slice(0, 200).forEach((x) => {
+      const p = h("p");
+      if (term) {
+        const low = x.t.toLowerCase(); let i = 0, j;
+        while ((j = low.indexOf(term, i)) !== -1) { p.append(x.t.slice(i, j), h("mark", { text: x.t.slice(j, j + term.length) })); i = j + term.length; }
+        p.append(x.t.slice(i));
+      } else p.textContent = x.t;
+      const segs = [SEGMENTS.canal.of(x.r), SEGMENTS.frecuencia.of(x.r), x.r.dispositivo].filter(Boolean).join(" · ");
+      box.append(h("div", { class: "quote" }, [p, h("div", { class: "qm", text: `${x.k} · ${segs}` })]));
+    });
+    if (!list.length) box.append(h("div", { class: "empty", text: "Ninguna respuesta coincide." }));
+  }
+
+  /* ---------- Exportar ---------- */
+  $("#btnCsv").addEventListener("click", () => {
+    const blob = new Blob(["﻿" + toCSV(state.rows)], { type: "text/csv;charset=utf-8" });
+    const a = h("a", { href: URL.createObjectURL(blob), download: "respuestas-filtradas.csv" });
+    document.body.append(a); a.click(); a.remove();
+  });
+  $("#btnCopy").addEventListener("click", async () => {
+    const lines = [`Resultados de la encuesta — ${state.rows.length} respuestas${state.sample ? " (DATOS DE EJEMPLO FICTICIOS)" : ""}`];
+    const active = Object.entries(state.filters).filter(([, v]) => v).map(([k, v]) => `${(SEGMENTS[k] || { label: k }).label}: ${v}`);
+    if (active.length) lines.push("Filtros: " + active.join(", "));
+    lines.push("", "HALLAZGOS CLAVE");
+    (state.lastInsights || []).forEach((i) => lines.push(`• [${i.tag}] ${i.stat} ${i.text}`, `  Decisión: ${i.decision}`));
+    if ((state.lastDiffs || []).length) {
+      lines.push("", "DIFERENCIAS ENTRE SEGMENTOS (hipótesis)");
+      state.lastDiffs.forEach((d) => lines.push(`• [${d.seg}] ${diffText(d)}`));
+    }
+    const text = lines.join("\n");
+    const b = $("#btnCopy");
+    try { await navigator.clipboard.writeText(text); b.textContent = "¡Copiado!"; }
+    catch { const ta = h("textarea"); ta.value = text; document.body.append(ta); ta.select(); document.execCommand("copy"); ta.remove(); b.textContent = "¡Copiado!"; }
+    setTimeout(() => (b.textContent = "Copiar resumen"), 1800);
+  });
+
+  /* ---------- Datos de ejemplo (ficticios, reproducibles) ---------- */
+  function sampleData() {
+    let seed = 20261119;
+    const rnd = () => { seed |= 0; seed = (seed + 0x6D2B79F5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+    const pick = (w) => { const tot = Object.values(w).reduce((a, b) => a + b, 0); let x = rnd() * tot; for (const [k, v] of Object.entries(w)) { if ((x -= v) <= 0) return k; } return Object.keys(w)[0]; };
+    const pickN = (w, k) => { const pool = { ...w }; const out = []; for (let i = 0; i < k && Object.keys(pool).length; i++) { const v = pick(pool); out.push(v); delete pool[v]; } return out; };
+    const some = (w) => Object.entries(w).filter(([, p]) => rnd() < p).map(([k]) => k);
+    const QUOTES = [
+      "Ver todas las funciones de hoy de mi cine en una sola pantalla, sin entrar película por película.",
+      "Que me diga desde el principio cuánto voy a pagar en total, con el cargo de servicio incluido.",
+      "Poder saltarme la comida con un solo botón. Siempre la compro allá.",
+      "Que se vea si la película ya se puede ver o si es preventa. Me ha pasado que compro para otro día sin darme cuenta.",
+      "Elegir las sillas antes de pagar y ver cuántas quedan sin tener que entrar a la función.",
+      "Que recuerde mi cine favorito y no tener que elegirlo cada vez.",
+      "Ver el saldo de la tarjeta Cineco antes de empezar a comprar.",
+      "Menos pasos. Son demasiadas pantallas para dos boletas.",
+      "Filtrar por hora: quiero ver qué empieza después de las 7 sin revisar cada película.",
+      "Que el tiempo para pagar no se acabe tan rápido cuando estoy coordinando con mis amigos.",
+      "Poder compartir la función con quien voy antes de pagar.",
+      "Que la página no se caiga los días de estreno.",
+      "Ver si es doblada o subtitulada sin abrir el detalle.",
+      "Comprar más rápido desde el celular, la web en móvil es lenta.",
+      "Que los puntos de la tarjeta se puedan usar sin ir a taquilla.",
+      "Que muestren el precio de cada sala (general, preferencial) al lado del horario.",
+      "No tener que iniciar sesión para comprar.",
+      "Ver la duración y a qué hora termina la película.",
+      "Que las promociones del día aparezcan antes de elegir la función.",
+      "Que el mapa de sillas se vea bien en el celular.",
+      "Un botón de comprar otra vez en el mismo cine.",
+      "Saber cuándo se abre la preventa de los estrenos grandes.",
+    ];
+    const WHY = ["Casi nunca compro comida online", "A veces sí me sirve el combo con descuento", "Me demora la compra", "Prefiero decidir allá según el hambre", "Si hay promo la tomo", "Me molesta que aparezca en medio de todo"];
+    const rows = [];
+    const now = Date.now();
+    for (let i = 0; i < 186; i++) {
+      const canal = pick({ Web: 34, App: 38, Taquilla: 15, Autoservicio: 6, "Otro medio": 7 });
+      const online = canal === "Web" || canal === "App";
+      const frec = pick({ "Varias veces al mes": 16, "Una vez al mes": 30, "Cada 2 o 3 meses": 30, "Un par de veces al año": 18, "Casi nunca": 6 });
+      const freq = frec === "Varias veces al mes" || frec === "Una vez al mes";
+      const tarjeta = pick(freq ? { Sí: 52, No: 38, "No sé qué es": 10 } : { Sí: 22, No: 58, "No sé qué es": 20 });
+      const disp = pick(canal === "App" ? { Móvil: 90, Escritorio: 6, Tablet: 4 } : { Móvil: 64, Escritorio: 32, Tablet: 4 });
+      const r = {
+        id: (i + 1000).toString(36), fecha: new Date(now - rnd() * 12 * 864e5).toISOString(), version: "1.0",
+        fuente: pick({ instagram: 40, whatsapp: 35, linkedin: 10, directo: 15 }), dispositivo: disp,
+        duracion_seg: rnd() < 0.05 ? Math.round(25 + rnd() * 30) : Math.round(120 + rnd() * 240),
+        p1_frecuencia: frec,
+        p2_cadenas: ["Cine Colombia"].concat(some({ Cinemark: 0.42, Cinépolis: 0.22, Procinal: 0.18, "Royal Films": 0.1 })).join(" | "),
+        p2_ciudad: pick({ Bogotá: 46, Medellín: 18, Cali: 12, Barranquilla: 8, Cartagena: 4, Bucaramanga: 5, Pereira: 3, "Otra ciudad": 4 }),
+        p3_canal: canal, p3_tarjeta: tarjeta,
+        p4_inicio: pick(canal === "App" ? { "Película primero": 30, "Cine primero": 38, "Hora primero": 14, "Lista de funciones": 12, "Busco ideas": 6 } : { "Película primero": 46, "Cine primero": 20, "Hora primero": 14, "Lista de funciones": 11, "Busco ideas": 9 }),
+        p5_primero: pick({ "Horarios disponibles": 38, Tráiler: 16, Sinopsis: 14, Duración: 5, "Clasificación por edad": 4, "Formato (2D, 3D, IMAX…)": 7, "Idioma (doblada o subtitulada)": 9, "Reseñas o calificación": 7 }),
+        p6_preventa: pick(online ? { "Comprar para función futura": 58, "Aviso, aún no se compra": 20, "Precio especial anticipado": 10, "Se puede ver hoy": 5, "No sé": 7 } : { "Comprar para función futura": 30, "Aviso, aún no se compra": 30, "Precio especial anticipado": 16, "Se puede ver hoy": 8, "No sé": 16 }),
+        p7_confusion: pick({ "Sí, varias veces": 20, "Sí, una vez": 31, No: 37, "No lo recuerdo": 12 }),
+        p11_salir: pick(tarjeta === "Sí" ? { "Sí, varias veces": 28, "Sí, alguna vez": 36, No: 30, "No lo recuerdo": 6 } : { "Sí, varias veces": 12, "Sí, alguna vez": 30, No: 48, "No lo recuerdo": 10 }),
+        p12_comida: pick({ "Ofrecer en el flujo": 15, "Saltable con un clic": 45, "Al final, después de pagar": 25, "No mostrarla": 15 }),
+      };
+      if (/^Sí/.test(r.p7_confusion)) {
+        const c = some({ "Estaba en preventa y la función era otro día": 0.42, "Era un próximo estreno": 0.38, "No tenía funciones en mi cine": 0.33, "No había funciones a la hora que quería": 0.22, "Estaba agotada": 0.08 });
+        r.p7_causa = (c.length ? c : ["Era un próximo estreno"]).join(" | ");
+      }
+      r.p8_filtros = pickN({ Fecha: 50, Hora: 62, "Cine o cercanía": canal === "App" ? 70 : 48, Película: 30, "Formato (2D, 3D, IMAX…)": 22, "Tipo de sala (general, preferencial, VIP)": 18, "Idioma (doblada o subtitulada)": 26, "Precio o promociones": 24, "Puestos disponibles": 16, "Clasificación por edad": 5 }, 1 + Math.floor(rnd() * 3)).join(" | ");
+      r.p9_datos = pickN({ "Hora de inicio": 95, "Hora de finalización": 28, Precio: 62, Formato: 44, Idioma: 50, "Tipo de sala": 34, "Puestos disponibles": canal === "App" ? 80 : 45, "Cine y distancia": 38, Duración: 26, "Clasificación por edad": 8, "Promociones que aplican": 30, "Puntos o beneficios Tarjeta Cineco": tarjeta === "Sí" ? 60 : 5 }, 3 + Math.floor(rnd() * 3)).join(" | ");
+      if (tarjeta === "Sí") {
+        r.p10_saldo_momento = pick({ "Siempre visible": 38, "Al elegir la función": 30, "En el resumen": 18, "Al elegir cómo pagar": 9, "No lo necesito": 5 });
+        r.p10_saldo_como = pick({ "En la web durante la compra": 22, "En la app antes de comprar": 22, "Pregunto en taquilla": 10, "Me entero al pagar": 42, "Otra forma": 4 });
+        if (r.p10_saldo_como === "Otra forma") r.p10_saldo_como_otro = "Le pregunto a mi pareja, la tarjeta está a su nombre";
+      }
+      if (/^Sí/.test(r.p11_salir)) {
+        const m = some({ "Revisar mi saldo o puntos": tarjeta === "Sí" ? 0.55 : 0.05, "Confirmar con quienes iba (hora, sillas)": 0.45, "Buscar un código o promoción": 0.28, "Comparar otro cine u horario": 0.3, "Resolver un problema de pago": 0.18, "Se acabó el tiempo de la reserva": 0.2, "Iniciar sesión o recuperar contraseña": 0.14 });
+        r.p11_motivo = (m.length ? m : ["Confirmar con quienes iba (hora, sillas)"]).join(" | ");
+      }
+      if (rnd() < 0.35) r.p12_porque = WHY[Math.floor(rnd() * WHY.length)];
+      r.p13_frustraciones = (rnd() < 0.05 ? ["Nada me frustra"] : pickN({ "Demasiados pasos para comprar": 48, "Encontrar horarios toma mucho tiempo": 40, "No es claro qué se puede ver hoy y qué no": online ? 26 : 40, "El precio final aparece muy tarde": 34, "Elegir sillas es difícil": 14, "El tiempo para pagar se acaba": 30, "La oferta de comida interrumpe": 28, "Problemas con el pago": 18, "Iniciar sesión o registrarme": 16, "No veo mi saldo o puntos Cineco": tarjeta === "Sí" ? 45 : 2, "La página es lenta o se cae": disp === "Móvil" ? 30 : 18 }, 1 + Math.floor(rnd() * 3))).join(" | ");
+      if (rnd() < 0.62) r.p14_cambio = QUOTES[Math.floor(rnd() * QUOTES.length)];
+      const full = {}; SURVEY.columns().forEach((c) => (full[c] = r[c] == null ? "" : String(r[c])));
+      rows.push(full);
+    }
+    return rows;
+  }
+
+  /* ---------- Inicio ---------- */
+  const qp = new URLSearchParams(location.search);
+  const initial = qp.get("csv") || CONFIG.DATA_URL;
+  if (qp.has("ejemplo")) setData(sampleData(), "Datos de ejemplo", { sample: true });
+  else if (initial) { $("#csvUrl").value = initial; loadUrl(initial); }
+})();
+</script>
+</body>
+</html>

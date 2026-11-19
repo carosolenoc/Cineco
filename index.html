@@ -1,0 +1,983 @@
+<!DOCTYPE html>
+<html lang="es-CO">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>¿Cómo compras tus entradas de cine? · Encuesta</title>
+<meta name="description" content="Encuesta de 4 minutos sobre la experiencia de comprar entradas de cine online.">
+<meta property="og:title" content="¿Cómo compras tus entradas de cine?">
+<meta property="og:description" content="Encuesta de 4 minutos. Tus respuestas ayudan a diseñar una mejor experiencia de compra.">
+<meta name="theme-color" content="#17151F">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F2EC;
+    --surface: #FFFFFF;
+    --ink: #17151F;
+    --ink-2: #4A4656;
+    --muted: #767181;
+    --line: #E2DDD3;
+    --line-strong: #CFC8BC;
+    --accent: #4B3BD6;
+    --accent-hover: #3E2FC0;
+    --accent-soft: #EFECFE;
+    --amber: #F2B134;
+    --error: #B42318;
+    --radius: 14px;
+    --display: "Bricolage Grotesque", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --ease: cubic-bezier(.2,.7,.2,1);
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100dvh;
+  }
+  button, input, select, textarea { font: inherit; color: inherit; }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+  /* ---------- Top bar ---------- */
+  .topbar {
+    position: sticky; top: 0; z-index: 10;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: saturate(1.4) blur(10px);
+    -webkit-backdrop-filter: saturate(1.4) blur(10px);
+  }
+  .topbar-inner {
+    max-width: 640px; margin: 0 auto; padding: 14px 20px 10px;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 14px; color: var(--ink-2); letter-spacing: .01em; }
+  .brand svg { flex: none; }
+  .step-count { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .progress { height: 3px; background: var(--line); }
+  .progress > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width .4s var(--ease); }
+  .topbar.is-hidden { display: none; }
+
+  .preview-banner {
+    background: #FFF4D6; color: #6A4A00; font-size: 13px; text-align: center; padding: 8px 16px;
+    border-bottom: 1px solid #F1DFA8;
+  }
+
+  /* ---------- Layout ---------- */
+  main { max-width: 640px; margin: 0 auto; padding: 8px 20px 140px; }
+  .screen { animation: enter .32s var(--ease) both; }
+  .screen.back-anim { animation-name: enter-back; }
+  @keyframes enter { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+  @keyframes enter-back { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+  @media (prefers-reduced-motion: reduce) {
+    .screen, .screen.back-anim { animation: none; }
+    .progress > span { transition: none; }
+  }
+
+  /* ---------- Intro ---------- */
+  .intro { padding-top: 12px; }
+  .ticket {
+    position: relative;
+    background: var(--ink);
+    color: #F4F1EA;
+    border-radius: 22px;
+    padding: 36px 28px 30px;
+    overflow: hidden;
+    --notch: 14px;
+    -webkit-mask: radial-gradient(circle var(--notch) at 0 62%, #0000 98%, #000) left / 51% 100% no-repeat,
+                  radial-gradient(circle var(--notch) at 100% 62%, #0000 98%, #000) right / 51% 100% no-repeat;
+            mask: radial-gradient(circle var(--notch) at 0 62%, #0000 98%, #000) left / 51% 100% no-repeat,
+                  radial-gradient(circle var(--notch) at 100% 62%, #0000 98%, #000) right / 51% 100% no-repeat;
+  }
+  .ticket::before {
+    content: ""; position: absolute; inset: auto -40px -120px auto; width: 300px; height: 300px;
+    background: radial-gradient(closest-side, rgba(242,177,52,.28), transparent);
+    pointer-events: none;
+  }
+  .ticket .eyebrow { color: var(--amber); }
+  .ticket h1 {
+    font-family: var(--display); font-weight: 700; letter-spacing: -.02em;
+    font-size: clamp(32px, 8vw, 46px); line-height: 1.04; margin: 10px 0 14px;
+    text-wrap: balance;
+  }
+  .ticket p.lead { color: #CFCAD8; margin: 0 0 22px; font-size: 17px; max-width: 46ch; }
+  .facts { list-style: none; padding: 0; margin: 0 0 26px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .facts li {
+    font-size: 13px; font-weight: 600; color: #F4F1EA;
+    border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 6px 12px;
+    display: inline-flex; align-items: center; gap: 6px;
+  }
+  .perforation { border-top: 2px dashed rgba(255,255,255,.16); margin: 0 -28px 22px; }
+  .ticket .fine { color: #9A94A6; font-size: 12.5px; margin: 16px 0 0; }
+  .btn-start { background: var(--amber); color: #1C1405; }
+  .btn-start:hover { background: #F5BE57; }
+
+  /* ---------- Question ---------- */
+  .eyebrow {
+    font-size: 12px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); margin: 18px 0 0;
+  }
+  .field { border: 0; padding: 0; margin: 0 0 28px; min-width: 0; scroll-margin-top: 72px; }
+  .field[hidden] { display: none; }
+  .field + .field { padding-top: 24px; border-top: 1px solid var(--line); }
+  .q-title {
+    font-family: var(--display); font-weight: 700; letter-spacing: -.015em;
+    font-size: clamp(22px, 5.6vw, 28px); line-height: 1.18; margin: 8px 0 6px;
+    text-wrap: balance; outline: none;
+  }
+  .field + .field .q-title { font-size: clamp(19px, 4.8vw, 22px); }
+  .q-help { color: var(--ink-2); margin: 0 0 16px; font-size: 15px; }
+  .q-help .counter { color: var(--accent); font-weight: 600; font-variant-numeric: tabular-nums; margin-left: 6px; }
+  .q-title + .options, .q-title + .control { margin-top: 16px; }
+  .opt-tag { font-weight: 500; font-size: 14px; color: var(--muted); margin-left: 6px; font-family: var(--sans); letter-spacing: 0; }
+
+  .options { display: grid; gap: 10px; }
+  .options.inline { grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); }
+  .options.cards { grid-template-columns: 1fr; }
+  @media (min-width: 560px) { .options.cards { grid-template-columns: 1fr 1fr; } }
+
+  .opt {
+    position: relative; display: flex; align-items: center; gap: 12px;
+    background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px; min-height: 54px; cursor: pointer;
+    transition: border-color .15s, background-color .15s, box-shadow .15s, opacity .15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .opt:hover { border-color: var(--line-strong); }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .ind {
+    flex: none; width: 20px; height: 20px; border-radius: 50%;
+    border: 1.5px solid var(--line-strong); background: #fff;
+    display: grid; place-items: center; transition: all .15s;
+  }
+  .opt.is-multi .ind { border-radius: 6px; }
+  .ind::after { content: ""; width: 8px; height: 8px; border-radius: 50%; background: #fff; transform: scale(0); transition: transform .15s var(--ease); }
+  .opt.is-multi .ind::after {
+    width: 11px; height: 6px; border-radius: 0; background: none;
+    border: 2px solid #fff; border-top: 0; border-right: 0; transform: rotate(-45deg) scale(0); margin-top: -3px;
+  }
+  .opt:has(input:checked) { border-color: var(--accent); background: var(--accent-soft); }
+  .opt:has(input:checked) .ind { background: var(--accent); border-color: var(--accent); }
+  .opt:has(input:checked) .ind::after { transform: scale(1); }
+  .opt.is-multi:has(input:checked) .ind::after { transform: rotate(-45deg) scale(1); }
+  .opt:has(input:focus-visible) { outline: 3px solid color-mix(in srgb, var(--accent) 40%, transparent); outline-offset: 2px; }
+  .opt:has(input:disabled) { opacity: .45; cursor: not-allowed; }
+  .opt .txt { display: flex; flex-direction: column; gap: 2px; }
+  .opt .lbl { font-weight: 550; }
+  .opt .desc { color: var(--ink-2); font-size: 14px; line-height: 1.35; }
+  .options.inline .opt { justify-content: center; padding: 12px; }
+  .options.inline .opt .ind { display: none; }
+
+  .opt.card { gap: 14px; padding: 14px 16px; }
+  .opt.card .ind { order: 3; margin-left: auto; }
+  @media (min-width: 560px) {
+    .opt.card { flex-direction: column; align-items: flex-start; gap: 10px; padding: 16px; }
+    .opt.card .ind { position: absolute; top: 14px; right: 14px; margin: 0; }
+  }
+  .opt.card .icon {
+    flex: none; width: 40px; height: 40px; border-radius: 12px; background: #F3F0EA; color: var(--ink);
+    display: grid; place-items: center; transition: background-color .15s, color .15s;
+  }
+  .opt.card:has(input:checked) .icon { background: var(--accent); color: #fff; }
+  .opt.card .lbl { font-size: 17px; }
+
+  .other-input { margin-top: 8px; }
+  .other-input[hidden] { display: none; }
+
+  .control, select, .text-input, textarea {
+    width: 100%; background: var(--surface); border: 1.5px solid var(--line); border-radius: var(--radius);
+    padding: 14px 16px; font-size: 16px; min-height: 54px; transition: border-color .15s, box-shadow .15s;
+  }
+  select {
+    appearance: none; -webkit-appearance: none; cursor: pointer; padding-right: 44px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5l5 5 5-5' fill='none' stroke='%2317151F' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 18px center;
+  }
+  textarea { min-height: 120px; resize: vertical; line-height: 1.45; }
+  select:focus, .text-input:focus, textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 22%, transparent); }
+  ::placeholder { color: #A6A0B0; }
+
+  .error { color: var(--error); font-size: 14px; font-weight: 550; margin: 10px 0 0; min-height: 0; }
+  .error:empty { display: none; }
+  .field.has-error select { border-color: color-mix(in srgb, var(--error) 45%, var(--line)); }
+  .error::before { content: "!"; display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--error); color: #fff; font-size: 12px; font-weight: 800; margin-right: 8px; vertical-align: -3px; }
+
+  /* ---------- Bottom nav ---------- */
+  .nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20; pointer-events: none;
+    background: linear-gradient(to top, var(--bg) 70%, color-mix(in srgb, var(--bg) 0%, transparent));
+    padding: 22px 20px calc(16px + env(safe-area-inset-bottom));
+  }
+  .nav-inner { max-width: 640px; margin: 0 auto; display: flex; gap: 12px; align-items: center; pointer-events: auto; }
+  .btn {
+    appearance: none; border: 0; cursor: pointer; border-radius: 999px;
+    font-weight: 650; font-size: 16px; padding: 15px 26px; min-height: 52px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    transition: background-color .15s, transform .1s, opacity .15s;
+  }
+  .btn:active { transform: scale(.98); }
+  .btn:focus-visible { outline: 3px solid color-mix(in srgb, var(--accent) 45%, transparent); outline-offset: 3px; }
+  .btn-primary { background: var(--accent); color: #fff; flex: 1; }
+  .btn-primary:hover { background: var(--accent-hover); }
+  .btn-primary[disabled] { opacity: .6; cursor: progress; }
+  .btn-ghost { background: transparent; color: var(--ink-2); padding: 15px 14px; }
+  .btn-ghost:hover { color: var(--ink); background: rgba(23,21,31,.05); }
+  .btn-ghost[hidden] { display: none; }
+  .btn-secondary { background: var(--surface); color: var(--ink); border: 1.5px solid var(--line); }
+  .btn-secondary:hover { border-color: var(--line-strong); }
+  .kbd-hint { font-size: 12px; color: var(--muted); display: none; }
+  @media (hover: hover) and (min-width: 720px) { .kbd-hint { display: inline; } }
+  .spinner { width: 16px; height: 16px; border-radius: 50%; border: 2px solid rgba(255,255,255,.4); border-top-color: #fff; animation: spin .7s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* ---------- Thanks ---------- */
+  .thanks { text-align: left; padding-top: 28px; }
+  .thanks .badge {
+    width: 64px; height: 64px; border-radius: 20px; background: var(--accent); color: #fff;
+    display: grid; place-items: center; margin-bottom: 20px;
+  }
+  .thanks h1 { font-family: var(--display); font-weight: 700; font-size: clamp(30px, 7vw, 40px); letter-spacing: -.02em; line-height: 1.08; margin: 0 0 12px; }
+  .thanks p { color: var(--ink-2); font-size: 17px; margin: 0 0 24px; max-width: 48ch; }
+  .share { display: flex; flex-wrap: wrap; gap: 10px; }
+  .share .btn { flex: 0 1 auto; }
+  .payload { margin-top: 32px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 14px 16px; }
+  .payload summary { cursor: pointer; font-weight: 600; font-size: 14px; }
+  .payload pre { font-size: 12px; overflow: auto; white-space: pre-wrap; word-break: break-word; margin: 12px 0 0; color: var(--ink-2); }
+  .send-error { background: #FDECEA; color: var(--error); border-radius: var(--radius); padding: 12px 16px; font-size: 14px; margin-top: 8px; }
+  .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+</style>
+</head>
+<body>
+<div class="preview-banner" id="previewBanner" hidden>Modo vista previa: las respuestas no se guardan todavía (falta conectar Google Sheets).</div>
+
+<header class="topbar is-hidden" id="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h15A1.5 1.5 0 0 1 21 7.5V10a2 2 0 0 0 0 4v2.5a1.5 1.5 0 0 1-1.5 1.5h-15A1.5 1.5 0 0 1 3 16.5V14a2 2 0 0 0 0-4V7.5Z" stroke="currentColor" stroke-width="1.6"/><path d="M15 6v12" stroke="currentColor" stroke-width="1.6" stroke-dasharray="2 2"/></svg>
+      <span>Encuesta de experiencia</span>
+    </div>
+    <span class="step-count" id="stepCount" aria-live="polite"></span>
+  </div>
+  <div class="progress" role="progressbar" aria-label="Progreso de la encuesta" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="progress"><span></span></div>
+</header>
+
+<main id="app" aria-live="off"></main>
+
+<script>
+/* ==========================================================================
+   CONFIGURACIÓN — pega aquí la URL de tu Apps Script (termina en /exec).
+   Mientras esté vacía, la encuesta funciona en "modo vista previa".
+   ========================================================================== */
+const CONFIG = {
+  ENDPOINT: "https://script.google.com/macros/s/AKfycbzfsFE00O2D09gGNrSnRbTn9E5j5fkfrMGQA-BED5coNDe5IZ5RhFYBFL8pf9Ew5S3UyA/exec",
+  SHARE_TEXT: "Estoy respondiendo una encuesta de 4 minutos sobre cómo compramos entradas de cine. ¿Me ayudas respondiéndola?",
+};
+</script>
+<script>
+/* ==========================================================================
+   Esquema de la encuesta — fuente única para la encuesta y el dashboard.
+   Si cambias una pregunta aquí, vuelve a generar ambos archivos (build.py).
+   ========================================================================== */
+const SURVEY = {
+  version: "1.0",
+  minutes: 4,
+  sections: {
+    perfil: "Tú y el cine",
+    descubrir: "Encontrar qué ver",
+    funcion: "Elegir la función",
+    pago: "Pagar",
+    experiencia: "Tu experiencia",
+  },
+
+  /* Cada pantalla tiene uno o más campos. Tipos: single | multi | select | text | email */
+  screens: [
+    {
+      id: "s1", section: "perfil",
+      fields: [{
+        key: "p1_frecuencia", type: "single", required: true,
+        title: "¿Con qué frecuencia vas a cine?",
+        options: ["Varias veces al mes", "Una vez al mes", "Cada 2 o 3 meses", "Un par de veces al año", "Casi nunca"],
+      }],
+    },
+    {
+      id: "s2", section: "perfil",
+      fields: [
+        {
+          key: "p2_cadenas", type: "multi", required: true,
+          title: "¿A qué cines sueles ir?",
+          help: "Elige todos los que apliquen.",
+          options: ["Cine Colombia", "Cinemark", "Cinépolis", "Procinal", "Royal Films", "Otro"],
+        },
+        {
+          key: "p2_ciudad", type: "select", required: true,
+          title: "¿En qué ciudad vas a cine normalmente?",
+          placeholder: "Elige tu ciudad",
+          options: ["Bogotá", "Medellín", "Cali", "Barranquilla", "Cartagena", "Bucaramanga", "Pereira", "Manizales", "Cúcuta", "Ibagué", "Santa Marta", "Villavicencio", "Otra ciudad"],
+        },
+      ],
+    },
+    {
+      id: "s3", section: "perfil",
+      fields: [
+        {
+          key: "p3_canal", type: "single", required: true,
+          title: "¿Dónde compras tus entradas la mayoría de las veces?",
+          options: [
+            { v: "Web", label: "En la página web" },
+            { v: "App", label: "En la app del celular" },
+            { v: "Taquilla", label: "En la taquilla del cine" },
+            { v: "Autoservicio", label: "En el autoservicio (kiosco) del cine" },
+            { v: "Otro medio", label: "Otro medio (bancos, plataformas, etc.)" },
+          ],
+        },
+        {
+          key: "p3_tarjeta", type: "single", required: true,
+          title: "¿Tienes Tarjeta Cineco?",
+          options: ["Sí", "No", "No sé qué es"],
+          inline: true,
+        },
+      ],
+    },
+    {
+      id: "s4", section: "descubrir",
+      fields: [{
+        key: "p4_inicio", type: "single", required: true,
+        title: "Es viernes y quieres ir a cine hoy, cerca de las 7 p. m. Abres la web: ¿por dónde empiezas?",
+        cards: true,
+        options: [
+          { v: "Película primero", label: "Por la película", desc: "Primero elijo qué ver y después busco cine y horario.", icon: "film" },
+          { v: "Cine primero", label: "Por el cine", desc: "Elijo mi cine y miro qué hay ahí.", icon: "pin" },
+          { v: "Hora primero", label: "Por la hora", desc: "Quiero ver lo que empieza cerca de las 7 p. m.", icon: "clock" },
+          { v: "Lista de funciones", label: "Todo junto", desc: "Una lista de las funciones de hoy que pueda filtrar.", icon: "list" },
+          { v: "Busco ideas", label: "No sé qué ver", desc: "Quiero que me recomienden algo.", icon: "spark" },
+        ],
+      }],
+    },
+    {
+      id: "s5", section: "descubrir",
+      fields: [{
+        key: "p5_primero", type: "single", required: true, shuffle: true,
+        title: "Cuando ves una película en la cartelera, ¿qué es lo primero que buscas?",
+        options: ["Horarios disponibles", "Tráiler", "Sinopsis", "Duración", "Clasificación por edad", "Formato (2D, 3D, IMAX…)", "Idioma (doblada o subtitulada)", "Reseñas o calificación"],
+      }],
+    },
+    {
+      id: "s6", section: "descubrir",
+      fields: [{
+        key: "p6_preventa", type: "single", required: true, shuffleExceptLast: true,
+        title: "Cuando una película dice «Preventa», ¿qué entiendes?",
+        options: [
+          { v: "Comprar para función futura", label: "Ya puedo comprar entradas para una función de otro día" },
+          { v: "Aviso, aún no se compra", label: "Es un aviso: todavía no puedo comprar" },
+          { v: "Precio especial anticipado", label: "Las entradas son más baratas por comprar antes" },
+          { v: "Se puede ver hoy", label: "Ya se puede ver hoy" },
+          { v: "No sé", label: "No estoy seguro/a" },
+        ],
+      }],
+    },
+    {
+      id: "s7", section: "descubrir",
+      fields: [
+        {
+          key: "p7_confusion", type: "single", required: true,
+          title: "¿Te ha pasado que una película parecía disponible, pero luego descubriste que aún no podías verla?",
+          options: ["Sí, varias veces", "Sí, una vez", "No", "No lo recuerdo"],
+        },
+        {
+          key: "p7_causa", type: "multi", required: true,
+          showIf: (a) => /^Sí/.test(a.p7_confusion || ""),
+          title: "¿Qué pasó?",
+          help: "Elige todo lo que te haya pasado.",
+          options: [
+            "Estaba en preventa y la función era otro día",
+            "Era un próximo estreno",
+            "No tenía funciones en mi cine",
+            "No había funciones a la hora que quería",
+            "Estaba agotada",
+            { v: "Otra cosa", label: "Otra cosa", other: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: "s8", section: "funcion",
+      fields: [{
+        key: "p8_filtros", type: "multi", required: true, max: 3, shuffle: true,
+        title: "Tienes poco tiempo y quieres encontrar una función específica. ¿Qué filtros usarías?",
+        help: "Elige hasta 3.",
+        options: ["Fecha", "Hora", "Cine o cercanía", "Película", "Formato (2D, 3D, IMAX…)", "Tipo de sala (general, preferencial, VIP)", "Idioma (doblada o subtitulada)", "Precio o promociones", "Puestos disponibles", "Clasificación por edad"],
+      }],
+    },
+    {
+      id: "s9", section: "funcion",
+      fields: [{
+        key: "p9_datos", type: "multi", required: true, max: 5, shuffle: true,
+        title: "Si solo pudieras ver 5 datos de una función antes de elegirla, ¿cuáles serían?",
+        help: "Elige hasta 5.",
+        options: ["Hora de inicio", "Hora de finalización", "Precio", "Formato", "Idioma", "Tipo de sala", "Puestos disponibles", "Cine y distancia", "Duración", "Clasificación por edad", "Promociones que aplican", "Puntos o beneficios Tarjeta Cineco"],
+      }],
+    },
+    {
+      id: "s10", section: "pago",
+      showIf: (a) => a.p3_tarjeta === "Sí",
+      fields: [
+        {
+          key: "p10_saldo_momento", type: "single", required: true,
+          title: "¿En qué momento esperas ver el saldo o los puntos de tu Tarjeta Cineco?",
+          options: [
+            { v: "Siempre visible", label: "Siempre visible, desde que inicio sesión" },
+            { v: "Al elegir la función", label: "Al elegir la función, para saber si me alcanza" },
+            { v: "En el resumen", label: "En el resumen, antes de pagar" },
+            { v: "Al elegir cómo pagar", label: "Solo cuando elijo cómo pagar" },
+            { v: "No lo necesito", label: "No necesito verlo" },
+          ],
+        },
+        {
+          key: "p10_saldo_como", type: "single", required: true,
+          title: "¿Cómo lo compruebas hoy?",
+          options: [
+            { v: "En la web durante la compra", label: "Lo veo en la web durante la compra" },
+            { v: "En la app antes de comprar", label: "Lo reviso en la app antes de comprar" },
+            { v: "Pregunto en taquilla", label: "Pregunto en taquilla" },
+            { v: "Me entero al pagar", label: "No lo compruebo: me entero al pagar" },
+            { v: "Otra forma", label: "Otra forma", other: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: "s11", section: "experiencia",
+      fields: [
+        {
+          key: "p11_salir", type: "single", required: true,
+          title: "¿Alguna vez saliste de una compra a medias para resolver algo y luego volviste?",
+          options: ["Sí, varias veces", "Sí, alguna vez", "No", "No lo recuerdo"],
+        },
+        {
+          key: "p11_motivo", type: "multi", required: true,
+          showIf: (a) => /^Sí/.test(a.p11_salir || ""),
+          title: "¿Para qué saliste?",
+          help: "Elige todo lo que aplique.",
+          options: [
+            "Revisar mi saldo o puntos",
+            "Confirmar con quienes iba (hora, sillas)",
+            "Buscar un código o promoción",
+            "Comparar otro cine u horario",
+            "Resolver un problema de pago",
+            "Se acabó el tiempo de la reserva",
+            "Iniciar sesión o recuperar contraseña",
+            { v: "Otra cosa", label: "Otra cosa", other: true },
+          ],
+        },
+      ],
+    },
+    {
+      id: "s12", section: "experiencia",
+      fields: [
+        {
+          key: "p12_comida", type: "single", required: true,
+          title: "Mientras compras tus entradas te ofrecen comida. ¿Qué prefieres?",
+          options: [
+            { v: "Ofrecer en el flujo", label: "Que me la ofrezcan en el camino; me sirve" },
+            { v: "Saltable con un clic", label: "Poder saltarla con un solo clic" },
+            { v: "Al final, después de pagar", label: "Verla al final, después de pagar las entradas" },
+            { v: "No mostrarla", label: "Que no aparezca; la compro en el cine" },
+          ],
+        },
+        {
+          key: "p12_porque", type: "text", required: false,
+          title: "¿Por qué?",
+          optionalLabel: true,
+          placeholder: "Cuéntanos en una frase",
+        },
+      ],
+    },
+    {
+      id: "s13", section: "experiencia",
+      fields: [{
+        key: "p13_frustraciones", type: "multi", required: true, max: 3, shuffle: true,
+        title: "¿Qué es lo más frustrante de comprar entradas de cine online?",
+        help: "Elige hasta 3.",
+        options: [
+          "Demasiados pasos para comprar",
+          "Encontrar horarios toma mucho tiempo",
+          "No es claro qué se puede ver hoy y qué no",
+          "El precio final aparece muy tarde",
+          "Elegir sillas es difícil",
+          "El tiempo para pagar se acaba",
+          "La oferta de comida interrumpe",
+          "Problemas con el pago",
+          "Iniciar sesión o registrarme",
+          "No veo mi saldo o puntos Cineco",
+          "La página es lenta o se cae",
+          { v: "Otra", label: "Otra", other: true, fixed: true },
+          { v: "Nada me frustra", label: "Nada me frustra", exclusive: true, fixed: true },
+        ],
+      }],
+    },
+    {
+      id: "s14", section: "experiencia",
+      fields: [
+        {
+          key: "p14_cambio", type: "text", required: false, long: true,
+          title: "Si pudieras cambiar UNA sola cosa al comprar entradas, ¿qué cambiarías?",
+          help: "Piensa en cómo compras tú realmente. Lo que sea: grande o pequeño.",
+          placeholder: "Por ejemplo: ver todas las funciones de hoy en mi cine en una sola pantalla…",
+        },
+        {
+          key: "email", type: "email", required: false, private: true,
+          title: "¿Te gustaría participar en una entrevista corta (20 min)?",
+          help: "Déjanos tu correo y te escribimos. Se guarda aparte de tus respuestas y solo lo usaremos para esto.",
+          optionalLabel: true,
+          placeholder: "tu@correo.com",
+        },
+      ],
+    },
+  ],
+
+  /* Orden fijo de columnas en Google Sheets */
+  meta: ["id", "fecha", "version", "fuente", "dispositivo", "duracion_seg"],
+};
+
+/* Utilidades compartidas */
+SURVEY.optValue = (o) => (typeof o === "string" ? o : o.v);
+SURVEY.optLabel = (o) => (typeof o === "string" ? o : o.label || o.v);
+/* Ojo: los strings tienen métodos heredados como .fixed(), por eso se comprueba el tipo */
+SURVEY.flag = (o, k) => typeof o === "object" && o !== null && !!o[k];
+SURVEY.allFields = () => SURVEY.screens.flatMap((s) => s.fields.map((f) => ({ ...f, screen: s })));
+SURVEY.columns = () => {
+  const cols = [...SURVEY.meta];
+  SURVEY.allFields().forEach((f) => {
+    if (f.private) return;
+    cols.push(f.key);
+    if (f.options && f.options.some((o) => SURVEY.flag(o, "other"))) cols.push(f.key + "_otro");
+  });
+  return cols;
+};
+
+</script>
+<script>
+(() => {
+  "use strict";
+  const $ = (sel, el = document) => el.querySelector(sel);
+  const app = $("#app");
+  const PREVIEW = !CONFIG.ENDPOINT;
+  if (PREVIEW) $("#previewBanner").hidden = false;
+
+  const ICONS = {
+    film: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 9h4M3 15h4M17 9h4M17 15h4"/></svg>',
+    pin: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5a7 7 0 0 1 14 0C19 14.8 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+    clock: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>',
+    list: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1"/><circle cx="4.5" cy="12" r="1"/><circle cx="4.5" cy="18" r="1"/></svg>',
+    spark: '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v4M12 17v4M3 12h4M17 12h4M6 6l2.5 2.5M15.5 15.5 18 18M6 18l2.5-2.5M15.5 8.5 18 6"/></svg>',
+    check: '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+    arrow: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',
+  };
+
+  /* ---------- Estado ---------- */
+  const answers = {};      // key -> string | string[]
+  const others = {};       // key -> texto de "Otra"
+  let current = -1;        // -1 = intro
+  let startedAt = null;
+  let honeypot = "";
+  const params = new URLSearchParams(location.search);
+  const source = (params.get("src") || params.get("utm_source") || "directo").slice(0, 60);
+
+  /* Orden aleatorio estable por persona (reduce el sesgo de orden) */
+  const orders = {};
+  function shuffled(field) {
+    if (orders[field.key]) return orders[field.key];
+    let opts = field.options.slice();
+    if (field.shuffle || field.shuffleExceptLast) {
+      const fixed = field.shuffleExceptLast ? [opts.pop()] : opts.filter((o) => SURVEY.flag(o, "fixed"));
+      const free = opts.filter((o) => !fixed.includes(o));
+      for (let i = free.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [free[i], free[j]] = [free[j], free[i]];
+      }
+      opts = free.concat(fixed);
+    }
+    orders[field.key] = opts;
+    return opts;
+  }
+
+  const screens = SURVEY.screens;
+  const isVisible = (s) => !s.showIf || s.showIf(answers);
+  const visibleScreens = () => screens.filter(isVisible);
+  const fieldVisible = (f) => !f.showIf || f.showIf(answers);
+
+  /* ---------- Progreso ---------- */
+  function updateProgress() {
+    const topbar = $("#topbar");
+    if (current < 0 || current >= screens.length) { topbar.classList.add("is-hidden"); return; }
+    topbar.classList.remove("is-hidden");
+    const vis = visibleScreens();
+    const idx = vis.indexOf(screens[current]);
+    const pct = Math.round((idx / vis.length) * 100);
+    $("#progress > span").style.width = Math.max(pct, 3) + "%";
+    $("#progress").setAttribute("aria-valuenow", pct);
+    $("#stepCount").textContent = `${idx + 1} de ${vis.length}`;
+  }
+
+  /* ---------- Render ---------- */
+  function el(tag, attrs = {}, children = []) {
+    const n = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs)) {
+      if (v === false || v == null) continue;
+      if (k === "class") n.className = v;
+      else if (k === "text") n.textContent = v;
+      else if (k === "html") n.innerHTML = v;
+      else if (k.startsWith("on")) n.addEventListener(k.slice(2), v);
+      else n.setAttribute(k, v === true ? "" : v);
+    }
+    [].concat(children).forEach((c) => c != null && n.append(c));
+    return n;
+  }
+
+  function renderIntro() {
+    app.replaceChildren(
+      el("section", { class: "screen intro" }, [
+        el("div", { class: "ticket" }, [
+          el("p", { class: "eyebrow", text: `Encuesta · ${SURVEY.minutes} minutos` }),
+          el("h1", { text: "¿Cómo compras tus entradas de cine?" }),
+          el("p", { class: "lead", text: "Queremos entender cómo eliges película, función y forma de pago, para proponer una experiencia de compra más simple en la web de Cine Colombia." }),
+          el("ul", { class: "facts" }, [
+            el("li", { text: `${screens.filter((s) => !s.showIf).length} preguntas cortas` }),
+            el("li", { text: "Respuestas anónimas" }),
+            el("li", { text: "No hay respuestas correctas" }),
+          ]),
+          el("div", { class: "perforation", "aria-hidden": "true" }),
+          el("button", { class: "btn btn-start", type: "button", onclick: start, html: `Empezar ${ICONS.arrow}` }),
+          el("p", { class: "fine", text: "Estudio independiente de experiencia de usuario. No es una encuesta oficial de Cine Colombia ni está afiliado a la marca." }),
+        ]),
+        el("div", { class: "hp", "aria-hidden": "true" }, [
+          el("label", { text: "No llenes este campo" }, [el("input", { type: "text", tabindex: "-1", autocomplete: "off", oninput: (e) => (honeypot = e.target.value) })]),
+        ]),
+      ])
+    );
+    renderNav(null);
+    updateProgress();
+  }
+
+  function start() {
+    startedAt = Date.now();
+    go(0, 1);
+  }
+
+  function optionNode(field, o, idx) {
+    const v = SURVEY.optValue(o);
+    const multi = field.type === "multi";
+    const id = `${field.key}_${idx}`;
+    const input = el("input", {
+      type: multi ? "checkbox" : "radio", name: field.key, value: v, id,
+    });
+    const cur = answers[field.key];
+    if (multi ? (cur || []).includes(v) : cur === v) input.checked = true;
+
+    const txt = el("span", { class: "txt" }, [el("span", { class: "lbl", text: SURVEY.optLabel(o) })]);
+    if (o.desc) txt.append(el("span", { class: "desc", text: o.desc }));
+
+    const children = [input];
+    if (field.cards && o.icon) children.push(el("span", { class: "icon", html: ICONS[o.icon] || "" }));
+    children.push(el("span", { class: "ind", "aria-hidden": "true" }), txt);
+
+    return el("label", { class: `opt${multi ? " is-multi" : ""}${field.cards ? " card" : ""}`, for: id }, children);
+  }
+
+  function fieldNode(field, isFirst) {
+    const wrap = el("fieldset", { class: "field", "data-key": field.key });
+    if (!fieldVisible(field)) wrap.hidden = true;
+    const titleTag = isFirst ? "h2" : "h3";
+    const title = el(titleTag, { class: "q-title", tabindex: isFirst ? "-1" : null });
+    title.textContent = field.title;
+    if (field.optionalLabel) title.append(el("span", { class: "opt-tag", text: "(opcional)" }));
+    wrap.append(el("legend", { class: "sr-only", text: field.title }), title);
+
+    if (field.help || field.max) {
+      const help = el("p", { class: "q-help", text: field.help || "" });
+      if (field.max) help.append(el("span", { class: "counter", "data-counter": field.key }));
+      wrap.append(help);
+    }
+
+    if (field.type === "single" || field.type === "multi") {
+      const list = el("div", { class: `options${field.inline ? " inline" : ""}${field.cards ? " cards" : ""}`, role: field.type === "single" ? "radiogroup" : "group", "aria-label": field.title });
+      shuffled(field).forEach((o, i) => list.append(optionNode(field, o, i)));
+      wrap.append(list);
+      const otherOpt = field.options.find((o) => SURVEY.flag(o, "other"));
+      if (otherOpt) {
+        const sel = answers[field.key];
+        const on = field.type === "multi" ? (sel || []).includes(otherOpt.v) : sel === otherOpt.v;
+        const inp = el("input", { class: "text-input other-input", type: "text", placeholder: "¿Cuál?", maxlength: "200", "aria-label": "Especifica cuál", "data-other": field.key });
+        inp.value = others[field.key] || "";
+        inp.hidden = !on;
+        inp.addEventListener("input", () => (others[field.key] = inp.value));
+        wrap.append(inp);
+      }
+      list.addEventListener("change", (e) => onChoice(field, e.target, wrap));
+    } else if (field.type === "select") {
+      const sel = el("select", { "aria-label": field.title, name: field.key });
+      sel.append(el("option", { value: "", text: field.placeholder || "Elige una opción", disabled: true }));
+      field.options.forEach((o) => sel.append(el("option", { value: SURVEY.optValue(o), text: SURVEY.optLabel(o) })));
+      sel.value = answers[field.key] || "";
+      sel.addEventListener("change", () => { answers[field.key] = sel.value; clearError(wrap); });
+      wrap.append(sel);
+    } else if (field.type === "text" || field.type === "email") {
+      const inp = field.long
+        ? el("textarea", { name: field.key, placeholder: field.placeholder || "", maxlength: "1000", "aria-label": field.title })
+        : el("input", { class: "text-input", type: field.type === "email" ? "email" : "text", name: field.key, placeholder: field.placeholder || "", maxlength: "300", autocomplete: field.type === "email" ? "email" : "off", inputmode: field.type === "email" ? "email" : null, "aria-label": field.title });
+      inp.value = answers[field.key] || "";
+      inp.addEventListener("input", () => { answers[field.key] = inp.value; clearError(wrap); });
+      wrap.append(inp);
+    }
+
+    wrap.append(el("p", { class: "error", role: "alert" }));
+    updateLimits(field, wrap);
+    return wrap;
+  }
+
+  function onChoice(field, input, wrap) {
+    if (field.type === "single") {
+      answers[field.key] = input.value;
+    } else {
+      const opt = field.options.find((o) => SURVEY.optValue(o) === input.value);
+      let list = answers[field.key] ? answers[field.key].slice() : [];
+      if (input.checked) {
+        if (SURVEY.flag(opt, "exclusive")) list = [];
+        else list = list.filter((v) => !field.options.some((o) => SURVEY.flag(o, "exclusive") && o.v === v));
+        list.push(input.value);
+      } else {
+        list = list.filter((v) => v !== input.value);
+      }
+      answers[field.key] = list;
+      wrap.querySelectorAll("input[type=checkbox]").forEach((cb) => (cb.checked = list.includes(cb.value)));
+    }
+    const otherInput = wrap.querySelector("[data-other]");
+    if (otherInput) {
+      const ov = field.options.find((o) => SURVEY.flag(o, "other")).v;
+      const on = field.type === "multi" ? answers[field.key].includes(ov) : answers[field.key] === ov;
+      otherInput.hidden = !on;
+      if (on && input.value === ov) setTimeout(() => otherInput.focus(), 30);
+    }
+    updateLimits(field, wrap);
+    clearError(wrap);
+    syncConditionalFields();
+
+    // Auto-avance: pantalla de una sola pregunta de opción única, sin "Otra"
+    const screen = screens[current];
+    const onlyField = screen.fields.filter(fieldVisible).length === 1;
+    if (field.type === "single" && onlyField && !field.options.some((o) => SURVEY.flag(o, "other"))) {
+      clearTimeout(onChoice.t);
+      onChoice.t = setTimeout(() => next(), 320);
+    }
+  }
+
+  function updateLimits(field, wrap) {
+    if (field.type !== "multi" || !field.max) return;
+    const n = (answers[field.key] || []).length;
+    const counter = wrap.querySelector(`[data-counter="${field.key}"]`);
+    if (counter) counter.textContent = `${n}/${field.max}`;
+    wrap.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+      const opt = field.options.find((o) => SURVEY.optValue(o) === cb.value);
+      cb.disabled = !cb.checked && n >= field.max && !SURVEY.flag(opt, "exclusive");
+    });
+  }
+
+  function syncConditionalFields() {
+    const screen = screens[current];
+    if (!screen) return;
+    screen.fields.forEach((f) => {
+      if (!f.showIf) return;
+      const node = app.querySelector(`.field[data-key="${f.key}"]`);
+      if (!node) return;
+      const wasHidden = node.hidden;
+      node.hidden = !fieldVisible(f);
+      if (wasHidden && !node.hidden) {
+        const smooth = !matchMedia("(prefers-reduced-motion: reduce)").matches;
+        setTimeout(() => node.scrollIntoView({ behavior: smooth ? "smooth" : "auto", block: "start" }), 60);
+      }
+    });
+    updateProgress();
+  }
+
+  function clearError(wrap) {
+    wrap.classList.remove("has-error");
+    const e = wrap.querySelector(".error");
+    if (e) e.textContent = "";
+  }
+
+  function renderScreen(dir) {
+    const screen = screens[current];
+    const vis = visibleScreens();
+    const form = el("form", { class: `screen q${dir < 0 ? " back-anim" : ""}`, novalidate: true });
+    form.append(el("p", { class: "eyebrow", text: SURVEY.sections[screen.section] }));
+    screen.fields.forEach((f, i) => form.append(fieldNode(f, i === 0)));
+    form.addEventListener("submit", (e) => { e.preventDefault(); next(); });
+    app.replaceChildren(form);
+    const isLast = vis.indexOf(screen) === vis.length - 1;
+    renderNav(isLast ? "Enviar respuestas" : "Continuar", form);
+    updateProgress();
+    const h = form.querySelector(".q-title");
+    if (h) h.focus({ preventScroll: true });
+    window.scrollTo({ top: 0 });
+  }
+
+  let navEl = null;
+  function renderNav(label, form) {
+    if (navEl) navEl.remove();
+    if (!label) { navEl = null; return; }
+    const back = el("button", { class: "btn btn-ghost", type: "button", onclick: prev, text: "Atrás" });
+    const nextBtn = el("button", { class: "btn btn-primary", type: "button", id: "nextBtn", onclick: () => next(), html: `${label} ${ICONS.arrow}` });
+    const hint = el("span", { class: "kbd-hint", text: "o pulsa Enter ↵" });
+    navEl = el("nav", { class: "nav", "aria-label": "Navegación de la encuesta" }, [el("div", { class: "nav-inner" }, [back, nextBtn, hint])]);
+    document.body.append(navEl);
+  }
+
+  /* ---------- Validación y navegación ---------- */
+  function validate() {
+    const screen = screens[current];
+    let firstBad = null;
+    screen.fields.forEach((f) => {
+      if (!fieldVisible(f)) return;
+      const wrap = app.querySelector(`.field[data-key="${f.key}"]`);
+      const v = answers[f.key];
+      let msg = "";
+      if (f.required) {
+        if (f.type === "multi" && !(v && v.length)) msg = "Elige al menos una opción para continuar.";
+        else if (f.type === "single" && !v) msg = "Elige una opción para continuar.";
+        else if (f.type === "select" && !v) msg = "Elige una opción para continuar.";
+      }
+      if (f.type === "email" && v && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v.trim())) msg = "Revisa el correo; parece incompleto. También puedes dejarlo vacío.";
+      if (msg) {
+        wrap.classList.add("has-error");
+        wrap.querySelector(".error").textContent = msg;
+        firstBad = firstBad || wrap;
+      }
+    });
+    if (firstBad) firstBad.scrollIntoView({ behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center" });
+    return !firstBad;
+  }
+
+  function go(index, dir) {
+    current = index;
+    if (current < 0) return renderIntro();
+    renderScreen(dir);
+  }
+
+  function next() {
+    clearTimeout(onChoice.t);
+    if (current >= 0 && !validate()) return;
+    let i = current + 1;
+    while (i < screens.length && !isVisible(screens[i])) i++;
+    if (i >= screens.length) return submit();
+    go(i, 1);
+  }
+
+  function prev() {
+    clearTimeout(onChoice.t);
+    let i = current - 1;
+    while (i >= 0 && !isVisible(screens[i])) i--;
+    go(i, -1);
+  }
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter" || current < 0 || e.target.tagName === "TEXTAREA" || e.target.tagName === "BUTTON") return;
+    if (e.target.closest && e.target.closest(".screen")) { e.preventDefault(); next(); }
+  });
+
+  /* ---------- Envío ---------- */
+  function device() {
+    const ua = navigator.userAgent;
+    if (/iPad|Tablet/i.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1)) return "Tablet";
+    if (/Mobi|Android|iPhone/i.test(ua)) return "Móvil";
+    return "Escritorio";
+  }
+
+  function buildPayload() {
+    const row = {};
+    SURVEY.columns().forEach((c) => (row[c] = ""));
+    row.id = (crypto.randomUUID ? crypto.randomUUID() : String(Date.now()) + Math.random()).slice(0, 8);
+    row.fecha = new Date().toISOString();
+    row.version = SURVEY.version;
+    row.fuente = source;
+    row.dispositivo = device();
+    row.duracion_seg = startedAt ? Math.round((Date.now() - startedAt) / 1000) : "";
+    SURVEY.allFields().forEach((f) => {
+      const shown = isVisible(f.screen) && fieldVisible(f);
+      const v = shown ? answers[f.key] : undefined;
+      if (f.private) { row[f.key] = shown && v ? String(v).trim() : ""; return; }
+      row[f.key] = v == null ? "" : Array.isArray(v) ? v.join(" | ") : String(v).trim();
+      if (f.options && f.options.some((o) => SURVEY.flag(o, "other"))) {
+        const ov = f.options.find((o) => SURVEY.flag(o, "other")).v;
+        const chosen = Array.isArray(v) ? v.includes(ov) : v === ov;
+        row[f.key + "_otro"] = shown && chosen ? (others[f.key] || "").trim() : "";
+      }
+    });
+    row._hp = honeypot;
+    return row;
+  }
+
+  let sending = false;
+  async function submit() {
+    if (sending) return;
+    const payload = buildPayload();
+    const btn = $("#nextBtn");
+    if (PREVIEW) return renderThanks(payload);
+    sending = true;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner" aria-hidden="true"></span> Enviando…';
+    try {
+      await fetch(CONFIG.ENDPOINT, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload),
+      });
+      renderThanks(null);
+    } catch (err) {
+      sending = false;
+      btn.disabled = false;
+      btn.innerHTML = `Reintentar ${ICONS.arrow}`;
+      let box = app.querySelector(".send-error");
+      if (!box) { box = el("div", { class: "send-error", role: "alert" }); app.querySelector(".screen").append(box); }
+      box.textContent = "No pudimos enviar tus respuestas. Revisa tu conexión e inténtalo de nuevo.";
+    }
+  }
+
+  function renderThanks(previewPayload) {
+    current = screens.length;
+    updateProgress();
+    renderNav(null);
+    const url = location.href.split("#")[0];
+    const wa = `https://wa.me/?text=${encodeURIComponent(CONFIG.SHARE_TEXT + " " + url)}`;
+    const copyBtn = el("button", { class: "btn btn-secondary", type: "button", text: "Copiar enlace" });
+    copyBtn.addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(url); copyBtn.textContent = "¡Enlace copiado!"; }
+      catch { copyBtn.textContent = url; }
+    });
+    const nodes = [
+      el("div", { class: "badge", html: ICONS.check }),
+      el("h1", { text: "¡Gracias por tu tiempo!" }),
+      el("p", { text: "Tus respuestas nos ayudan a diseñar una forma más simple de encontrar tu película y comprar tus entradas. Si conoces a alguien que va a cine, compártele la encuesta." }),
+      el("div", { class: "share" }, [
+        el("a", { class: "btn btn-primary", href: wa, target: "_blank", rel: "noopener", text: "Compartir por WhatsApp", style: "flex:0 1 auto;text-decoration:none" }),
+        copyBtn,
+      ]),
+    ];
+    if (previewPayload) {
+      const pre = el("pre");
+      pre.textContent = JSON.stringify(previewPayload, null, 2);
+      nodes.push(el("details", { class: "payload" }, [el("summary", { text: "Vista previa: datos que se enviarían a Google Sheets" }), pre]));
+    }
+    app.replaceChildren(el("section", { class: "screen thanks" }, nodes));
+    window.scrollTo({ top: 0 });
+  }
+
+  renderIntro();
+})();
+</script>
+</body>
+</html>
