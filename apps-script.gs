@@ -11,15 +11,12 @@
  *
  * Qué hace:
  *  - Guarda cada respuesta como una fila en la hoja "Respuestas".
- *  - Guarda los correos (opcionales) en una hoja aparte, "Contactos",
- *    para que puedas publicar "Respuestas" sin exponer datos personales.
+ *    La encuesta no pide datos personales: las respuestas son anónimas.
  *  - Ignora envíos de bots (campo trampa) y neutraliza texto que empiece
  *    por = + - @ para que no se interprete como fórmula.
  */
 
 const SHEET_RESPUESTAS = 'Respuestas';
-const SHEET_CONTACTOS = 'Contactos';
-const CAMPOS_PRIVADOS = ['email'];
 
 function doPost(e) {
   const lock = LockService.getScriptLock();
@@ -32,16 +29,6 @@ function doPost(e) {
     delete data._hp;
 
     const ss = SpreadsheetApp.getActiveSpreadsheet();
-
-    // 1) Datos privados → hoja Contactos (solo si hay correo)
-    const email = String(data.email || '').trim();
-    CAMPOS_PRIVADOS.forEach(function (k) { delete data[k]; });
-    if (email) {
-      const contactos = getSheet_(ss, SHEET_CONTACTOS);
-      appendRow_(contactos, { id: data.id, fecha: data.fecha, email: email });
-    }
-
-    // 2) Respuestas → hoja Respuestas
     const respuestas = getSheet_(ss, SHEET_RESPUESTAS);
     appendRow_(respuestas, data);
 

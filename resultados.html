@@ -274,7 +274,7 @@
       <div class="block-head">
         <div>
           <h2 id="oTitle">Respuestas abiertas</h2>
-          <p>Lo que cambiarían, por qué prefieren cierta opción de comida y las respuestas «Otra». Temas detectados por palabras clave y todas las respuestas para leerlas en contexto. Toca un tema o una palabra para filtrar.</p>
+          <p>Lo que cambiarían, los problemas de pago, por qué prefieren cierta opción de comida y las respuestas «Otra». Temas detectados por palabras clave y todas las respuestas para leerlas en contexto. Toca un tema o una palabra para filtrar.</p>
         </div>
       </div>
       <div class="open-grid">
@@ -305,7 +305,7 @@ const CONFIG = {
    Si cambias una pregunta aquí, vuelve a generar ambos archivos (build.py).
    ========================================================================== */
 const SURVEY = {
-  version: "1.0",
+  version: "1.3",
   minutes: 4,
   sections: {
     perfil: "Tú y el cine",
@@ -349,8 +349,7 @@ const SURVEY = {
           key: "p3_canal", type: "single", required: true,
           title: "¿Dónde compras tus entradas la mayoría de las veces?",
           options: [
-            { v: "Web", label: "En la página web" },
-            { v: "App", label: "En la app del celular" },
+            { v: "Web", label: "En la página web (celular o computador)" },
             { v: "Taquilla", label: "En la taquilla del cine" },
             { v: "Autoservicio", label: "En el autoservicio (kiosco) del cine" },
             { v: "Otro medio", label: "Otro medio (bancos, plataformas, etc.)" },
@@ -431,7 +430,7 @@ const SURVEY = {
         key: "p8_filtros", type: "multi", required: true, max: 3, shuffle: true,
         title: "Tienes poco tiempo y quieres encontrar una función específica. ¿Qué filtros usarías?",
         help: "Elige hasta 3.",
-        options: ["Fecha", "Hora", "Cine o cercanía", "Película", "Formato (2D, 3D, IMAX…)", "Tipo de sala (general, preferencial, VIP)", "Idioma (doblada o subtitulada)", "Precio o promociones", "Puestos disponibles", "Clasificación por edad"],
+        options: ["Fecha", "Hora", "Cine o cercanía", "Película", "Formato (2D, 3D, IMAX…)", "Tipo de sala (general, preferencial, VIP)", "Idioma (doblada o subtitulada)", "Precio", "Puestos disponibles", "Clasificación por edad"],
       }],
     },
     {
@@ -440,33 +439,59 @@ const SURVEY = {
         key: "p9_datos", type: "multi", required: true, max: 5, shuffle: true,
         title: "Si solo pudieras ver 5 datos de una función antes de elegirla, ¿cuáles serían?",
         help: "Elige hasta 5.",
-        options: ["Hora de inicio", "Hora de finalización", "Precio", "Formato", "Idioma", "Tipo de sala", "Puestos disponibles", "Cine y distancia", "Duración", "Clasificación por edad", "Promociones que aplican", "Puntos o beneficios Tarjeta Cineco"],
+        options: ["Hora de inicio", "Hora de finalización", "Precio", "Formato", "Idioma", "Tipo de sala", "Puestos disponibles", "Cine y distancia", "Duración", "Clasificación por edad", "Puntos o beneficios Tarjeta Cineco"],
       }],
     },
     {
       id: "s10", section: "pago",
-      showIf: (a) => a.p3_tarjeta === "Sí",
       fields: [
         {
-          key: "p10_saldo_momento", type: "single", required: true,
-          title: "¿En qué momento esperas ver el saldo o los puntos de tu Tarjeta Cineco?",
+          key: "p10_medio_pago", type: "multi", required: true,
+          title: "¿Con qué medios de pago te gustaría pagar tus entradas?",
+          help: "Elige todos los que quieras.",
           options: [
-            { v: "Siempre visible", label: "Siempre visible, desde que inicio sesión" },
-            { v: "Al elegir la función", label: "Al elegir la función, para saber si me alcanza" },
-            { v: "En el resumen", label: "En el resumen, antes de pagar" },
-            { v: "Al elegir cómo pagar", label: "Solo cuando elijo cómo pagar" },
-            { v: "No lo necesito", label: "No necesito verlo" },
+            "Tarjeta de crédito",
+            "Tarjeta débito",
+            "PSE",
+            "Saldo de la Tarjeta Cineco",
+            { v: "Otro", label: "Otro", other: true },
           ],
         },
         {
-          key: "p10_saldo_como", type: "single", required: true,
-          title: "¿Cómo lo compruebas hoy?",
+          key: "p10_problema", type: "single", required: true,
+          title: "¿Has tenido algún problema con tus medios de pago al comprar entradas?",
+          options: ["Sí", "No"],
+          inline: true,
+        },
+        {
+          key: "p10_problema_detalle", type: "text", required: false, long: true,
+          showIf: (a) => a.p10_problema === "Sí",
+          title: "¿Qué pasó?",
+          optionalLabel: true,
+          placeholder: "Por ejemplo: me rechazó la tarjeta, se demoró el PSE, me cobraron dos veces…",
+        },
+      ],
+    },
+    {
+      id: "s10b", section: "pago",
+      showIf: (a) => a.p3_tarjeta === "Sí",
+      fields: [
+        {
+          key: "p10_recarga", type: "single", required: true,
+          title: "¿Te ha tocado recargar la tarjeta solo para poder terminar una compra?",
+          options: ["Sí, varias veces", "Sí, alguna vez", "No", "No lo recuerdo"],
+        },
+        {
+          key: "p10_recarga_accion", type: "multi", required: true,
+          showIf: (a) => /^Sí/.test(a.p10_recarga || ""),
+          title: "¿Qué hiciste?",
+          help: "Elige todo lo que te haya pasado.",
           options: [
-            { v: "En la web durante la compra", label: "Lo veo en la web durante la compra" },
-            { v: "En la app antes de comprar", label: "Lo reviso en la app antes de comprar" },
-            { v: "Pregunto en taquilla", label: "Pregunto en taquilla" },
-            { v: "Me entero al pagar", label: "No lo compruebo: me entero al pagar" },
-            { v: "Otra forma", label: "Otra forma", other: true },
+            "Recargué y terminé la compra",
+            "Abandoné la compra",
+            "Compré sin la tarjeta para pagar con otro medio",
+            "Compré en taquilla",
+            { v: "Otra cosa", label: "Otra cosa", other: true },
           ],
         },
       ],
@@ -485,9 +510,8 @@ const SURVEY = {
           title: "¿Para qué saliste?",
           help: "Elige todo lo que aplique.",
           options: [
-            "Revisar mi saldo o puntos",
+            "Recargar mi Tarjeta Cineco",
             "Confirmar con quienes iba (hora, sillas)",
-            "Buscar un código o promoción",
             "Comparar otro cine u horario",
             "Resolver un problema de pago",
             "Se acabó el tiempo de la reserva",
@@ -534,7 +558,7 @@ const SURVEY = {
           "La oferta de comida interrumpe",
           "Problemas con el pago",
           "Iniciar sesión o registrarme",
-          "No veo mi saldo o puntos Cineco",
+          "Con Tarjeta Cineco no puedo elegir cómo pagar",
           "La página es lenta o se cae",
           { v: "Otra", label: "Otra", other: true, fixed: true },
           { v: "Nada me frustra", label: "Nada me frustra", exclusive: true, fixed: true },
@@ -549,13 +573,6 @@ const SURVEY = {
           title: "Si pudieras cambiar UNA sola cosa al comprar entradas, ¿qué cambiarías?",
           help: "Piensa en cómo compras tú realmente. Lo que sea: grande o pequeño.",
           placeholder: "Por ejemplo: ver todas las funciones de hoy en mi cine en una sola pantalla…",
-        },
-        {
-          key: "email", type: "email", required: false, private: true,
-          title: "¿Te gustaría participar en una entrevista corta (20 min)?",
-          help: "Déjanos tu correo y te escribimos. Se guarda aparte de tus respuestas y solo lo usaremos para esto.",
-          optionalLabel: true,
-          placeholder: "tu@correo.com",
         },
       ],
     },
@@ -607,7 +624,7 @@ SURVEY.columns = () => {
     p1_frecuencia: { short: "Frecuencia", ordinal: true, decide: "Si optimizar para la recompra rápida (frecuentes) o para orientar (ocasionales)." },
     p2_cadenas: { short: "Cadenas", decide: "Qué competidores conoce tu audiencia: referentes de patrones a revisar." },
     p2_ciudad: { short: "Ciudad", decide: "Representatividad de la muestra." },
-    p3_canal: { short: "Canal", decide: "Qué canal priorizar y si la web debe parecerse a la app." },
+    p3_canal: { short: "Canal", decide: "Cuánto pesa la compra en la web frente a la taquilla y el autoservicio." },
     p3_tarjeta: { short: "Tarjeta Cineco", decide: "Cuánto pesa el flujo de pago con Tarjeta Cineco." },
     p4_inicio: { short: "Por dónde empiezan", phrase: "como punto de partida para buscar función", decide: "Arquitectura de la cartelera: entrada por película, por cine o por hora." },
     p5_primero: { short: "Lo primero que buscan", phrase: "como lo primero que buscan en una película", decide: "Jerarquía de la ficha de película: qué va arriba." },
@@ -616,8 +633,10 @@ SURVEY.columns = () => {
     p7_causa: { short: "Causa de la confusión", phrase: "como causa de la confusión", decide: "Qué estados (preventa, próximamente, sin funciones, agotada) deben distinguirse a simple vista." },
     p8_filtros: { short: "Filtros", phrase: "como filtro", decide: "Qué filtros quedan visibles por defecto y cuáles van a «Más filtros»." },
     p9_datos: { short: "5 datos de una función", phrase: "entre los 5 datos clave de una función", decide: "Contenido mínimo de la tarjeta de función." },
-    p10_saldo_momento: { short: "Cuándo ver saldo/puntos", phrase: "como momento para ver su saldo Cineco", decide: "En qué paso mostrar saldo y puntos de la Tarjeta Cineco." },
-    p10_saldo_como: { short: "Cómo revisan su saldo", phrase: "como forma de revisar su saldo", decide: "Si hoy el saldo es invisible hasta el momento de pagar." },
+    p10_medio_pago: { short: "Medios de pago preferidos", phrase: "como medio de pago", decide: "Qué medios de pago ofrecer en la web, también a quienes tienen Tarjeta Cineco." },
+    p10_problema: { short: "Problemas con medios de pago", ordinal: true, collapse: { "Sí": "Sí" }, phraseYes: "han tenido problemas con sus medios de pago", decide: "Si el pago es un punto de falla que hay que investigar." },
+    p10_recarga: { short: "Tuvieron que recargar", ordinal: true, collapse: { "Sí, varias veces": "Sí", "Sí, alguna vez": "Sí" }, phraseYes: "han tenido que recargar la tarjeta para terminar una compra", decide: "Tamaño del problema de la recarga obligatoria." },
+    p10_recarga_accion: { short: "Qué hicieron al tener que recargar", phrase: "al verse obligados a recargar", decide: "Costo de la recarga obligatoria: compras perdidas, sin tarjeta o desviadas a taquilla." },
     p11_salir: { short: "Salieron de la compra", ordinal: true, collapse: { "Sí, varias veces": "Sí", "Sí, alguna vez": "Sí" }, phraseYes: "han salido de una compra a medias para resolver algo", decide: "Tamaño del abandono temporal del flujo." },
     p11_motivo: { short: "Por qué salieron", phrase: "como motivo para salir de la compra", decide: "Qué información traer dentro del flujo para evitar salidas." },
     p12_comida: { short: "Comida en la compra", phrase: "para la oferta de comida", decide: "Ubicación de la confitería: en el flujo, saltable o después de pagar." },
@@ -628,8 +647,8 @@ SURVEY.columns = () => {
   const SEGMENTS = {
     canal: {
       label: "Canal de compra", src: ["p3_canal"],
-      groups: ["Web", "App", "Presencial", "Otro medio"],
-      of: (r) => ({ Web: "Web", App: "App", Taquilla: "Presencial", Autoservicio: "Presencial", "Otro medio": "Otro medio" })[r.p3_canal] || null,
+      groups: ["Web", "Presencial", "Otro medio"],
+      of: (r) => ({ Web: "Web", Taquilla: "Presencial", Autoservicio: "Presencial", "Otro medio": "Otro medio" })[r.p3_canal] || null,
     },
     frecuencia: {
       label: "Frecuencia", src: ["p1_frecuencia"],
@@ -637,7 +656,7 @@ SURVEY.columns = () => {
       of: (r) => !r.p1_frecuencia ? null : (["Varias veces al mes", "Una vez al mes"].includes(r.p1_frecuencia) ? "Frecuente (1+ al mes)" : "Ocasional"),
     },
     tarjeta: {
-      label: "Tarjeta Cineco", src: ["p3_tarjeta", "p10_saldo_momento", "p10_saldo_como"],
+      label: "Tarjeta Cineco", src: ["p3_tarjeta", "p10_recarga", "p10_recarga_accion"],
       groups: ["Con tarjeta", "Sin tarjeta"],
       of: (r) => !r.p3_tarjeta ? null : (r.p3_tarjeta === "Sí" ? "Con tarjeta" : "Sin tarjeta"),
     },
@@ -844,7 +863,7 @@ SURVEY.columns = () => {
       tile("Respuestas en la vista", n.toLocaleString("es-CO"), speeders ? `${speeders} excluidas por rapidez` : "Todas incluidas", true),
       tile("Tiempo mediano", mm, "para completar la encuesta"),
       tile("Respondieron desde el celular", pct(share((r) => r.dispositivo && r.dispositivo !== "Escritorio"))),
-      tile("Compran online (web o app)", pct(share((r) => r.p3_canal === "Web" || r.p3_canal === "App"))),
+      tile("Compran en la página web", pct(share((r) => r.p3_canal === "Web"))),
       tile("Tienen Tarjeta Cineco", pct(share((r) => r.p3_tarjeta === "Sí"))),
     );
   }
@@ -894,11 +913,25 @@ SURVEY.columns = () => {
       const seats = dist(rows, "p9_datos").items.find((i) => i.v === "Puestos disponibles");
       add({ tag: "Tarjeta de función", stat: pct(seats ? seats.p : NaN), text: `incluye «Puestos disponibles» entre sus 5 datos clave. El top 5: ${d.items.map((i) => `${i.v} (${pct(i.p)})`).join(", ")}.`, decision: "Diseña la tarjeta de función con esos 5 datos; lo demás, al tocarla.", n: d.n });
     }
-    // Saldo Cineco
-    const s = top("p10_saldo_momento", rows, 1);
-    if (s.n && s.items.length) {
-      const late = dist(rows, "p10_saldo_como").items.find((i) => i.v === "Me entero al pagar");
-      add({ tag: "Tarjeta Cineco", stat: pct(s.items[0].p), text: `de quienes tienen Tarjeta Cineco espera ver su saldo ${q(s.items[0].v.toLowerCase())}.${late && late.c ? ` Hoy, ${pct(late.p)} se entera solo al pagar.` : ""}`, decision: "Muestra saldo y puntos en el momento que la mayoría espera, no solo en el paso de pago.", n: s.n });
+    // Medios de pago
+    const mpAll = top("p10_medio_pago", rows, 3);
+    const holders = answered(rows, "p10_medio_pago").filter((r) => r.p3_tarjeta === "Sí");
+    if (holders.length) {
+      const other = holders.filter((r) => split(r.p10_medio_pago).some((v) => v !== "Saldo de la Tarjeta Cineco")).length / holders.length;
+      const rec = answered(rows, "p10_recarga");
+      const recYes = rec.length ? rec.filter((r) => /^Sí/.test(r.p10_recarga)).length / rec.length : NaN;
+      const acc = answered(rows, "p10_recarga_accion");
+      const LOST = ["Abandoné la compra", "Compré sin la tarjeta para pagar con otro medio", "Compré en taquilla"];
+      const lost = acc.length ? acc.filter((r) => split(r.p10_recarga_accion).some((v) => LOST.includes(v))).length / acc.length : NaN;
+      let text = "de quienes tienen Tarjeta Cineco quiere poder pagar con algo distinto al saldo (crédito, débito, PSE u otro).";
+      if (isFinite(recYes)) text += ` ${pct(recYes)} ha tenido que recargar para terminar una compra`;
+      if (isFinite(recYes)) text += isFinite(lost) ? `; de ellos, ${pct(lost)} abandonó, compró sin la tarjeta o se fue a taquilla.` : ".";
+      add({ tag: "Tarjeta Cineco y pago", stat: pct(other), text, decision: "Deja elegir el medio de pago (PSE, crédito o débito) aunque la persona tenga Tarjeta Cineco.", n: holders.length });
+    }
+    const pr = answered(rows, "p10_problema");
+    if (pr.length) {
+      const yes = pr.filter((r) => r.p10_problema === "Sí").length / pr.length;
+      add({ tag: "Medios de pago", stat: pct(yes), text: `ha tenido algún problema con sus medios de pago al comprar entradas.${mpAll.items.length ? ` Los medios preferidos: ${mpAll.items.map((i) => `${i.v} (${pct(i.p)})`).join(", ")}.` : ""}`, decision: "Ofrece esos medios desde el inicio del pago y revisa en «Respuestas abiertas» qué falló.", n: pr.length });
     }
     // Salir del flujo
     const p11 = answered(rows, "p11_salir");
@@ -1015,11 +1048,11 @@ SURVEY.columns = () => {
     const f = FIELD[key]; const m = META[key] || {};
     const d = dist(rows, key);
     const card = h("article", { class: "qcard" });
-    card.append(h("h3", { text: f.title }));
+    card.append(h("h3", { text: f.showIf && m.short ? m.short : f.title }));
     card.append(h("p", { class: "decide" }, [h("b", { text: "Ayuda a decidir: " }), m.decide || ""]));
     const groups = groupsFor(rows);
     const multiNote = f.type === "multi" ? " · selección múltiple" : "";
-    card.append(h("p", { class: "base", text: `Base: ${d.n} personas${multiNote}${f.showIf || f.screen.showIf ? " · pregunta condicional" : ""}` }));
+    card.append(h("p", { class: "base", text: `Base: ${d.n} personas${multiNote}${f.showIf ? ` · solo quienes respondieron «Sí» antes («${f.title}»)` : f.screen.showIf ? " · solo quienes tienen Tarjeta Cineco" : ""}` }));
     if (!d.n) { card.append(h("div", { class: "empty", text: "Sin respuestas en esta vista." })); return card; }
 
     let items = sortItems(key, d.items);
@@ -1093,12 +1126,12 @@ SURVEY.columns = () => {
     ["Rapidez y menos pasos", /(paso|rápid|rapid|fácil|facil|simple|demor|lent|clic|click|tiempo)/i],
     ["Horarios y funciones", /(horari|funci|hora\b|hoy|cartelera)/i],
     ["Sillas y puestos", /(silla|puesto|asiento|ubicaci)/i],
-    ["Precio y promociones", /(precio|caro|cost|tarifa|valor|promo|descuent|cobr)/i],
-    ["Pago, saldo y puntos", /(pag|saldo|punto|tarjeta|cineco|nequi|pse|daviplata)/i],
+    ["Precio", /(precio|caro|cost|tarifa|valor|cobr)/i],
+    ["Pago, saldo y recargas", /(pag|saldo|punto|tarjeta|cineco|recarg|pse|crédito|credito|débito|debito|nequi|daviplata)/i],
     ["Comida", /(comida|confiter|combo|crispeta|palomita|snack)/i],
     ["Cuenta e inicio de sesión", /(sesi|registr|contraseñ|login|cuenta|usuario)/i],
     ["Disponibilidad y preventa", /(preventa|estreno|próxim|proxim|disponib|agotad)/i],
-    ["App y web", /(app|aplicaci|web|página|pagina|celular|móvil|movil|se cae|caíd|error)/i],
+    ["Web y celular", /(web|página|pagina|celular|móvil|movil|computador|se cae|caíd|error)/i],
   ];
   const STOP = new Set("a al algo así como con cuando de del desde donde el ella en entre era es esa ese eso esta este esto fue ha hay la las le lo los más mas me mi mis muy no o para pero por porque que qué se sea ser si sí sin sobre solo su sus también tener tengo todo todos tu tus un una uno unos y ya yo poder puedo puede quiero quisiera debería deberia sería seria tanto cada otra otro hace hacer vez veces tan bien mucho mucha casi nunca siempre allá aquí según antes después algo cosa cosas mismo misma están estaba están".split(" "));
   function texts(rows) {
@@ -1106,6 +1139,7 @@ SURVEY.columns = () => {
     rows.forEach((r) => {
       if (r.p14_cambio) out.push({ t: r.p14_cambio, k: "Cambiaría", r });
       if (r.p12_porque) out.push({ t: r.p12_porque, k: "Comida · por qué", r });
+      if (r.p10_problema_detalle) out.push({ t: r.p10_problema_detalle, k: "Problema de pago", r });
       Object.keys(r).filter((c) => c.endsWith("_otro") && r[c]).forEach((c) => out.push({ t: r[c], k: "Otra · " + (META[c.replace(/_otro$/, "")] || {}).short, r }));
     });
     return out;
@@ -1151,7 +1185,7 @@ SURVEY.columns = () => {
     search.value = state.openTerm;
     search.addEventListener("input", () => { state.openTerm = search.value.trim().toLowerCase(); renderQuotes(all); renderOpenChips(); });
     const kinds = h("div", { class: "chips", role: "group", "aria-label": "Tipo de respuesta" });
-    [["", "Todas"], ["Cambiaría", "Lo que cambiarían"], ["Comida", "Comida: por qué"], ["Otra", "Respuestas «Otra»"]].forEach(([k, t]) => {
+    [["", "Todas"], ["Cambiaría", "Lo que cambiarían"], ["Problema de pago", "Problemas de pago"], ["Comida", "Comida: por qué"], ["Otra", "Respuestas «Otra»"]].forEach(([k, t]) => {
       const b = h("button", { class: "chip", type: "button", "aria-pressed": String(state.openKind === k), text: t });
       b.addEventListener("click", () => { state.openKind = k; renderOpen(state.rows); });
       kinds.append(b);
@@ -1217,7 +1251,8 @@ SURVEY.columns = () => {
       "Que se vea si la película ya se puede ver o si es preventa. Me ha pasado que compro para otro día sin darme cuenta.",
       "Elegir las sillas antes de pagar y ver cuántas quedan sin tener que entrar a la función.",
       "Que recuerde mi cine favorito y no tener que elegirlo cada vez.",
-      "Ver el saldo de la tarjeta Cineco antes de empezar a comprar.",
+      "Poder pagar con PSE o tarjeta de crédito aunque tenga la Tarjeta Cineco, sin tener que recargarla.",
+      "Que me deje combinar el saldo de la tarjeta con otro medio de pago.",
       "Menos pasos. Son demasiadas pantallas para dos boletas.",
       "Filtrar por hora: quiero ver qué empieza después de las 7 sin revisar cada película.",
       "Que el tiempo para pagar no se acabe tan rápido cuando estoy coordinando con mis amigos.",
@@ -1229,21 +1264,28 @@ SURVEY.columns = () => {
       "Que muestren el precio de cada sala (general, preferencial) al lado del horario.",
       "No tener que iniciar sesión para comprar.",
       "Ver la duración y a qué hora termina la película.",
-      "Que las promociones del día aparezcan antes de elegir la función.",
       "Que el mapa de sillas se vea bien en el celular.",
       "Un botón de comprar otra vez en el mismo cine.",
       "Saber cuándo se abre la preventa de los estrenos grandes.",
     ];
-    const WHY = ["Casi nunca compro comida online", "A veces sí me sirve el combo con descuento", "Me demora la compra", "Prefiero decidir allá según el hambre", "Si hay promo la tomo", "Me molesta que aparezca en medio de todo"];
+    const WHY = ["Casi nunca compro comida online", "A veces sí me sirve, así no hago fila", "Me demora la compra", "Prefiero decidir allá según el hambre", "Me molesta que aparezca en medio de todo"];
+    const PAYPROB = [
+      (t) => t ? "Me obligó a recargar la Tarjeta Cineco y no me dejó pagar con mi tarjeta de crédito" : "Me rechazó la tarjeta de crédito y no me dejó intentar con otra",
+      () => "El pago con PSE se demoró y se acabó el tiempo de la reserva",
+      () => "Me cobraron pero no me llegaron las boletas al correo",
+      () => "El banco pidió validación por la app y cuando volví la reserva había expirado",
+      (t) => t ? "No pude combinar el saldo de la tarjeta con otro medio" : "Me cobraron dos veces",
+    ];
     const rows = [];
     const now = Date.now();
     for (let i = 0; i < 186; i++) {
-      const canal = pick({ Web: 34, App: 38, Taquilla: 15, Autoservicio: 6, "Otro medio": 7 });
-      const online = canal === "Web" || canal === "App";
+      const canal = pick({ Web: 62, Taquilla: 20, Autoservicio: 8, "Otro medio": 10 });
+      const online = canal === "Web";
       const frec = pick({ "Varias veces al mes": 16, "Una vez al mes": 30, "Cada 2 o 3 meses": 30, "Un par de veces al año": 18, "Casi nunca": 6 });
       const freq = frec === "Varias veces al mes" || frec === "Una vez al mes";
       const tarjeta = pick(freq ? { Sí: 52, No: 38, "No sé qué es": 10 } : { Sí: 22, No: 58, "No sé qué es": 20 });
-      const disp = pick(canal === "App" ? { Móvil: 90, Escritorio: 6, Tablet: 4 } : { Móvil: 64, Escritorio: 32, Tablet: 4 });
+      const disp = pick({ Móvil: 72, Escritorio: 24, Tablet: 4 });
+      const mobile = disp !== "Escritorio";
       const r = {
         id: (i + 1000).toString(36), fecha: new Date(now - rnd() * 12 * 864e5).toISOString(), version: "1.0",
         fuente: pick({ instagram: 40, whatsapp: 35, linkedin: 10, directo: 15 }), dispositivo: disp,
@@ -1252,7 +1294,7 @@ SURVEY.columns = () => {
         p2_cadenas: ["Cine Colombia"].concat(some({ Cinemark: 0.42, Cinépolis: 0.22, Procinal: 0.18, "Royal Films": 0.1 })).join(" | "),
         p2_ciudad: pick({ Bogotá: 46, Medellín: 18, Cali: 12, Barranquilla: 8, Cartagena: 4, Bucaramanga: 5, Pereira: 3, "Otra ciudad": 4 }),
         p3_canal: canal, p3_tarjeta: tarjeta,
-        p4_inicio: pick(canal === "App" ? { "Película primero": 30, "Cine primero": 38, "Hora primero": 14, "Lista de funciones": 12, "Busco ideas": 6 } : { "Película primero": 46, "Cine primero": 20, "Hora primero": 14, "Lista de funciones": 11, "Busco ideas": 9 }),
+        p4_inicio: pick(mobile ? { "Película primero": 30, "Cine primero": 38, "Hora primero": 14, "Lista de funciones": 12, "Busco ideas": 6 } : { "Película primero": 46, "Cine primero": 20, "Hora primero": 14, "Lista de funciones": 11, "Busco ideas": 9 }),
         p5_primero: pick({ "Horarios disponibles": 38, Tráiler: 16, Sinopsis: 14, Duración: 5, "Clasificación por edad": 4, "Formato (2D, 3D, IMAX…)": 7, "Idioma (doblada o subtitulada)": 9, "Reseñas o calificación": 7 }),
         p6_preventa: pick(online ? { "Comprar para función futura": 58, "Aviso, aún no se compra": 20, "Precio especial anticipado": 10, "Se puede ver hoy": 5, "No sé": 7 } : { "Comprar para función futura": 30, "Aviso, aún no se compra": 30, "Precio especial anticipado": 16, "Se puede ver hoy": 8, "No sé": 16 }),
         p7_confusion: pick({ "Sí, varias veces": 20, "Sí, una vez": 31, No: 37, "No lo recuerdo": 12 }),
@@ -1263,19 +1305,27 @@ SURVEY.columns = () => {
         const c = some({ "Estaba en preventa y la función era otro día": 0.42, "Era un próximo estreno": 0.38, "No tenía funciones en mi cine": 0.33, "No había funciones a la hora que quería": 0.22, "Estaba agotada": 0.08 });
         r.p7_causa = (c.length ? c : ["Era un próximo estreno"]).join(" | ");
       }
-      r.p8_filtros = pickN({ Fecha: 50, Hora: 62, "Cine o cercanía": canal === "App" ? 70 : 48, Película: 30, "Formato (2D, 3D, IMAX…)": 22, "Tipo de sala (general, preferencial, VIP)": 18, "Idioma (doblada o subtitulada)": 26, "Precio o promociones": 24, "Puestos disponibles": 16, "Clasificación por edad": 5 }, 1 + Math.floor(rnd() * 3)).join(" | ");
-      r.p9_datos = pickN({ "Hora de inicio": 95, "Hora de finalización": 28, Precio: 62, Formato: 44, Idioma: 50, "Tipo de sala": 34, "Puestos disponibles": canal === "App" ? 80 : 45, "Cine y distancia": 38, Duración: 26, "Clasificación por edad": 8, "Promociones que aplican": 30, "Puntos o beneficios Tarjeta Cineco": tarjeta === "Sí" ? 60 : 5 }, 3 + Math.floor(rnd() * 3)).join(" | ");
+      r.p8_filtros = pickN({ Fecha: 50, Hora: 62, "Cine o cercanía": mobile ? 66 : 42, Película: 30, "Formato (2D, 3D, IMAX…)": 22, "Tipo de sala (general, preferencial, VIP)": 18, "Idioma (doblada o subtitulada)": 26, Precio: 26, "Puestos disponibles": 16, "Clasificación por edad": 5 }, 1 + Math.floor(rnd() * 3)).join(" | ");
+      r.p9_datos = pickN({ "Hora de inicio": 95, "Hora de finalización": 28, Precio: 62, Formato: 44, Idioma: 50, "Tipo de sala": 34, "Puestos disponibles": online ? 72 : 38, "Cine y distancia": 38, Duración: 26, "Clasificación por edad": 8, "Puntos o beneficios Tarjeta Cineco": tarjeta === "Sí" ? 60 : 5 }, 3 + Math.floor(rnd() * 3)).join(" | ");
+      const mpay = pickN({ "Tarjeta de crédito": 55, "Tarjeta débito": 45, PSE: 40, "Saldo de la Tarjeta Cineco": tarjeta === "Sí" ? 40 : 2, Otro: 6 }, 1 + Math.floor(rnd() * 3));
+      r.p10_medio_pago = mpay.join(" | ");
+      if (mpay.includes("Otro")) r.p10_medio_pago_otro = rnd() < 0.5 ? "Nequi" : "Daviplata";
+      r.p10_problema = rnd() < (tarjeta === "Sí" ? 0.45 : 0.25) ? "Sí" : "No";
+      if (r.p10_problema === "Sí" && rnd() < 0.7) r.p10_problema_detalle = PAYPROB[Math.floor(rnd() * PAYPROB.length)](tarjeta === "Sí");
       if (tarjeta === "Sí") {
-        r.p10_saldo_momento = pick({ "Siempre visible": 38, "Al elegir la función": 30, "En el resumen": 18, "Al elegir cómo pagar": 9, "No lo necesito": 5 });
-        r.p10_saldo_como = pick({ "En la web durante la compra": 22, "En la app antes de comprar": 22, "Pregunto en taquilla": 10, "Me entero al pagar": 42, "Otra forma": 4 });
-        if (r.p10_saldo_como === "Otra forma") r.p10_saldo_como_otro = "Le pregunto a mi pareja, la tarjeta está a su nombre";
+        r.p10_recarga = pick({ "Sí, varias veces": 34, "Sí, alguna vez": 30, No: 28, "No lo recuerdo": 8 });
+        if (/^Sí/.test(r.p10_recarga)) {
+          const a = some({ "Recargué y terminé la compra": 0.7, "Abandoné la compra": 0.22, "Compré sin la tarjeta para pagar con otro medio": 0.25, "Compré en taquilla": 0.15, "Otra cosa": 0.04 });
+          r.p10_recarga_accion = (a.length ? a : ["Recargué y terminé la compra"]).join(" | ");
+          if (a.includes("Otra cosa")) r.p10_recarga_accion_otro = "Le pedí a alguien que comprara con su tarjeta de crédito";
+        }
       }
       if (/^Sí/.test(r.p11_salir)) {
-        const m = some({ "Revisar mi saldo o puntos": tarjeta === "Sí" ? 0.55 : 0.05, "Confirmar con quienes iba (hora, sillas)": 0.45, "Buscar un código o promoción": 0.28, "Comparar otro cine u horario": 0.3, "Resolver un problema de pago": 0.18, "Se acabó el tiempo de la reserva": 0.2, "Iniciar sesión o recuperar contraseña": 0.14 });
+        const m = some({ "Recargar mi Tarjeta Cineco": tarjeta === "Sí" ? 0.5 : 0.02, "Confirmar con quienes iba (hora, sillas)": 0.45, "Comparar otro cine u horario": 0.3, "Resolver un problema de pago": 0.18, "Se acabó el tiempo de la reserva": 0.2, "Iniciar sesión o recuperar contraseña": 0.14 });
         r.p11_motivo = (m.length ? m : ["Confirmar con quienes iba (hora, sillas)"]).join(" | ");
       }
       if (rnd() < 0.35) r.p12_porque = WHY[Math.floor(rnd() * WHY.length)];
-      r.p13_frustraciones = (rnd() < 0.05 ? ["Nada me frustra"] : pickN({ "Demasiados pasos para comprar": 48, "Encontrar horarios toma mucho tiempo": 40, "No es claro qué se puede ver hoy y qué no": online ? 26 : 40, "El precio final aparece muy tarde": 34, "Elegir sillas es difícil": 14, "El tiempo para pagar se acaba": 30, "La oferta de comida interrumpe": 28, "Problemas con el pago": 18, "Iniciar sesión o registrarme": 16, "No veo mi saldo o puntos Cineco": tarjeta === "Sí" ? 45 : 2, "La página es lenta o se cae": disp === "Móvil" ? 30 : 18 }, 1 + Math.floor(rnd() * 3))).join(" | ");
+      r.p13_frustraciones = (rnd() < 0.05 ? ["Nada me frustra"] : pickN({ "Demasiados pasos para comprar": 48, "Encontrar horarios toma mucho tiempo": 40, "No es claro qué se puede ver hoy y qué no": online ? 26 : 40, "El precio final aparece muy tarde": 34, "Elegir sillas es difícil": 14, "El tiempo para pagar se acaba": 30, "La oferta de comida interrumpe": 28, "Problemas con el pago": 18, "Iniciar sesión o registrarme": 16, "Con Tarjeta Cineco no puedo elegir cómo pagar": tarjeta === "Sí" ? 48 : 2, "La página es lenta o se cae": disp === "Móvil" ? 30 : 18 }, 1 + Math.floor(rnd() * 3))).join(" | ");
       if (rnd() < 0.62) r.p14_cambio = QUOTES[Math.floor(rnd() * QUOTES.length)];
       const full = {}; SURVEY.columns().forEach((c) => (full[c] = r[c] == null ? "" : String(r[c])));
       rows.push(full);
